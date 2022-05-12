@@ -1,0 +1,127 @@
+version: '3.2'
+
+services:
+  database:
+    container_name: postgres_database
+    image: postgres:alpine
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ./one_time_config/postgresql.init:/docker-entrypoint-initdb.d:ro
+    env_file: 
+      - postgre.env
+      - authentik_postgres.env
+      - hass_postgres.env
+    networks:
+      - backbone
+  
+  nginx:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    container_name: ingress_nginx
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d:ro
+      - ./data/ssl/:/etc/ssl:ro
+    depends_on:
+      - authentik_server
+    networks:
+      - auth
+      - ingress
+      - hass
+      - mgnmt
+  
+  redis:
+    image: bitnami/redis
+    restart: unless-stopped
+    container_name: "redis"
+    env_file:
+      - redis.env
+      - authentik_redis.env
+    networks:
+      - auth
+
+  authentik_server:
+    image: ghcr.io/goauthentik/server:2022.4.1
+    restart: unless-stopped
+    command: server
+    container_name: authentik_server
+    depends_on:
+      - database
+      - redis
+      - geoipupdate
+    env_file:
+      - authentik.env
+      - authentik_postgres.env
+      - authentik_redis.env
+    volumes:
+      - ./data/authentik/media:/media
+      - ./data/authentik/custom-templates:/templates
+      - geoip:/geoip
+    networks:
+      - backbone
+      - auth
+  
+  authentik_worker:
+    image: ghcr.io/goauthentik/server:2022.4.1
+    restart: unless-stopped
+    command: worker
+    container_name: authentik_worker
+    depends_on:
+      - database
+      - redis
+      - geoipupdate
+    env_file:
+      - authentik.env
+      - authentik_postgres.env
+      - authentik_redis.env
+    user: root
+    volumes:
+      - ./data/authentik/media:/media
+      - ./data/authentik/custom-templates:/templates
+      - ./data/authentik/certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - geoip:/geoip
+    networks:
+      - backbone
+      - auth
+  
+  geoipupdate:
+    image: "maxmindinc/geoipupdate:latest"
+    container_name: geoip_update
+    volumes:
+      - "geoip:/usr/share/GeoIP"
+    env_file:
+      - geoip.env
+    networks:
+      - auth
+
+volumes:
+  database:
+    driver: local
+  geoip:
+    driver: local
+
+networks:
+  backbone:
+    ipam:
+      config:
+        - subnet: 172.0.0.0/16
+  auth:
+    ipam:
+      config:
+        - subnet: 172.1.0.0/16
+  ingress:
+    ipam:
+      config:
+        - subnet: 172.254.0.0/16
+  hass:
+    ipam:
+      config:
+        - subnet: 172.2.0.0/16
+  mgnmt:
+    ipam:
+      config:
+        - subnet: 172.253.0.0/16
