@@ -1,0 +1,19 @@
+{
+    "CN": "Tetofonta's intermediate CA",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+        "C":  "IT",
+        "L":  "Brescia",
+        "O":  "tetofonta",
+        "OU": "Tetofonta's intermediate CA",
+        "ST": "Italy"
+        }
+    ],
+    "ca": {
+        "expiry": "42720h"
+    }
+}

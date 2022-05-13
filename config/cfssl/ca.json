@@ -1,0 +1,16 @@
+{
+    "CN": "Tetofonta's CA",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "IT",
+            "L": "Brescia",
+            "O": "tetofonta",
+            "OU": "Tetofonta Root CA",
+            "ST": "Italy"
+        }
+    ]
+}
