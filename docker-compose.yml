@@ -19,9 +19,9 @@ services:
       - database:/var/lib/postgresql/data
       - ./one_time_config/postgresql.init:/docker-entrypoint-initdb.d:ro
     env_file: 
-      - postgre.env
-      - authentik_postgres.env
-      - hass_postgres.env
+      - env/postgre.env
+      - env/authentik_postgres.env
+      - env/hass_postgres.env
     networks:
       - backbone
   
@@ -33,9 +33,10 @@ services:
       - 80:80
     volumes:
       - ./config/nginx:/etc/nginx/conf.d:ro
-      - ./data/ssl/public/auth.tetofonta.local:/etc/ssl/auth.tetofonta.local:ro
+      - ./data/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/etc/ca/intermediate_ca_fullchain.pem:ro
+      - ./data/ssl/public:/etc/ssl/:ro
     depends_on:
-      - authentik_server
+      - authentik-server
     networks:
       - auth
       - ingress
@@ -43,15 +44,18 @@ services:
       - mgnmt
   
   redis:
-    image: bitnami/redis
+    image: redis
     restart: unless-stopped
+    entrypoint: /bin/bash
+    command: /init/init.sh
     env_file:
-      - redis.env
-      - authentik_redis.env
+      - env/authentik_redis.env
     networks:
       - auth
+    volumes:
+      - ./one_time_config/redis.init/:/init:ro
 
-  authentik_server:
+  authentik-server:
     image: ghcr.io/goauthentik/server:2022.4.1
     restart: unless-stopped
     depends_on:
@@ -59,21 +63,24 @@ services:
       - database
       - redis
       - geoipupdate
-    command: server
+    entrypoint: /bin/sh
+    command: /init/init.sh
     env_file:
-      - authentik.env
-      - authentik_postgres.env
-      - authentik_redis.env
+      - env/authentik.env
+      - env/authentik_postgres.env
+      - env/authentik_redis.env
     volumes:
-      - ./one_time_config/authentik.init:/init:ro
+      - ./one_time_config/authentik.init/:/init
       - ./data/authentik/media:/media
       - ./data/authentik/custom-templates:/templates
       - geoip:/geoip
     networks:
       - backbone
       - auth
+    ports:
+      - 9000:9443
   
-  authentik_worker:
+  authentik-worker:
     image: ghcr.io/goauthentik/server:2022.4.1
     restart: unless-stopped
     command: worker
@@ -83,14 +90,14 @@ services:
       - redis
       - geoipupdate
     env_file:
-      - authentik.env
-      - authentik_postgres.env
-      - authentik_redis.env
+      - env/authentik.env
+      - env/authentik_postgres.env
+      - env/authentik_redis.env
     user: root
     volumes:
       - ./data/authentik/media:/media
       - ./data/authentik/custom-templates:/templates
-      - ./data/ssl/internal/certs/authentik:/certs/authentik
+      - ./data/ssl/internal/certs/authentik-server:/certs/authentik-server
       - /var/run/docker.sock:/var/run/docker.sock
       - geoip:/geoip
     networks:
@@ -102,7 +109,7 @@ services:
     volumes:
       - "geoip:/usr/share/GeoIP"
     env_file:
-      - geoip.env
+      - env/geoip.env
     networks:
       - auth
 

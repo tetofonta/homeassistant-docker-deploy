@@ -1,10 +1,13 @@
 from requests import get, post, put, patch, delete
 import json
+import os
+import time
 
 #todo from env file
-user = 'akadmin'
-authentic_host = 'https://auth.tetofonta.local/api/v3'
-token = 'admintoken1234'
+authentic_host = f'https://{os.environ["AK_HOST"]}:{os.environ["AK_PORT"]}/api/v3'
+token = os.environ['AK_ADMIN_TOKEN']
+
+print(authentic_host, token)
 
 def _authentik_request(method, url, data={}):
     #todo handle pagination
@@ -49,6 +52,16 @@ def create_user(**kwargs):
 def edit_tenant(uuid, **kwargs):
     return _authentik_request('PUT', f"/core/tenants/{uuid}/", kwargs)
 
+def edit_tenant(uuid, **kwargs):
+    return _authentik_request('PUT', f"/core/tenants/{uuid}/", kwargs)
+
+def get_outpost(search):
+    data = _authentik_request('GET', f'/outposts/instances/?username={search}')
+    return data['results'][0] if 'results' in data and len(data['results']) > 0 else None
+
+def edit_outpost(uuid, **kwargs):
+    return _authentik_request('PUT', f"/outposts/instances/{uuid}/", kwargs)
+
 def get_provider(search):
     data = _authentik_request('GET', f'/providers/all/?search={search}')
     return data['results'][0] if 'results' in data and len(data['results']) > 0 else None
@@ -74,14 +87,26 @@ def get_flow(name):
     data = _authentik_request('GET', f'/flows/instances/?search={name}')
     return data['results'][0] if 'results' in data and len(data['results']) > 0 else None
 
+def wait_for_node():
+    while True:
+        try:
+            print('waiting...')
+            data = get(f'https://{os.environ["AK_HOST"]}:{os.environ["AK_PORT"]}/-/health/ready/', headers={'User-Agent': 'goauthentik.io lifecycle Healthcheck', 'Authorization': f"Bearer {token}", 'Accept': 'application/json'}, verify=False)
+            print(data)
+            if data.status_code == 204:
+                break
+        except Exception as e:
+            print(e)
+        time.sleep(2)
+    time.sleep(1)
+
+wait_for_node()
+
 OAUTH_EXPLICIT=get_flow('default-provider-authorization-explicit-consent')
 OAUTH_IMPLICIT=get_flow('default-provider-authorization-implicit-consent')
-print(OAUTH_EXPLICIT, OAUTH_IMPLICIT)
 
 #Change web certificate
 tenant = get_tenant('authentik-default')
-cert = get_certificate('authentik')['pk']
-edit_tenant(tenant['tenant_uuid'], web_certificate=cert, domain=tenant['domain'])
 
 #Create groups
 hass_group = get_group('hass')
@@ -111,4 +136,10 @@ if code_provider is None:
 hass_app = get_app('hass-app')
 if hass_app is None:
     hass_app = create_app(name='hass-app', slug='hass-app', provider=hass_provider['pk'], policy_engine_mode='any')
-print(hass_app)
+
+code_app = get_app('code-app')
+if code_app is None:
+    code_app = create_app(name='code-app', slug='code-app', provider=code_provider['pk'], policy_engine_mode='any')
+
+out = get_outpost('authentik Embedded Outpost')
+edit_outpost(out['pk'], name='authentik Embedded Outpost', type='proxy', providers=[code_app['pk']])

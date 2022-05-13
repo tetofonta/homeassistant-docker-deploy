@@ -1,5 +1,5 @@
 {
-    "CN": "authentik_server",
+    "CN": "authentik-server",
     "key": {
       "algo": "rsa",
       "size": 2048
@@ -14,7 +14,7 @@
     }
     ],
     "hosts": [
-      "authentik_server",
+      "authentik-server",
       "localhost"
     ]
   }
