@@ -1,8 +1,18 @@
 version: '3.2'
 
 services:
+  cfssl:
+    image: cfssl/cfssl
+    restart: 'no'
+    entrypoint: /bin/bash
+    command:
+      - /etc/sslconf/gen_crt.sh
+    volumes:
+      - ./config/cfssl:/etc/sslconf:ro
+      - ./data/ssl/internal:/etc/ssl:rw
+      - ./data/ssl/public:/etc/tmp_ssl:rw
+
   database:
-    container_name: postgres_database
     image: postgres:alpine
     restart: unless-stopped
     volumes:
@@ -18,13 +28,12 @@ services:
   nginx:
     image: nginx:stable-alpine
     restart: unless-stopped
-    container_name: ingress_nginx
     ports:
       - 443:443
       - 80:80
     volumes:
       - ./config/nginx:/etc/nginx/conf.d:ro
-      - ./data/ssl/:/etc/ssl:ro
+      - ./data/ssl/public/auth.tetofonta.local:/etc/ssl/auth.tetofonta.local:ro
     depends_on:
       - authentik_server
     networks:
@@ -36,7 +45,6 @@ services:
   redis:
     image: bitnami/redis
     restart: unless-stopped
-    container_name: "redis"
     env_file:
       - redis.env
       - authentik_redis.env
@@ -46,17 +54,18 @@ services:
   authentik_server:
     image: ghcr.io/goauthentik/server:2022.4.1
     restart: unless-stopped
-    command: server
-    container_name: authentik_server
     depends_on:
+      - cfssl
       - database
       - redis
       - geoipupdate
+    command: server
     env_file:
       - authentik.env
       - authentik_postgres.env
       - authentik_redis.env
     volumes:
+      - ./one_time_config/authentik.init:/init:ro
       - ./data/authentik/media:/media
       - ./data/authentik/custom-templates:/templates
       - geoip:/geoip
@@ -68,8 +77,8 @@ services:
     image: ghcr.io/goauthentik/server:2022.4.1
     restart: unless-stopped
     command: worker
-    container_name: authentik_worker
     depends_on:
+      - cfssl
       - database
       - redis
       - geoipupdate
@@ -81,7 +90,7 @@ services:
     volumes:
       - ./data/authentik/media:/media
       - ./data/authentik/custom-templates:/templates
-      - ./data/authentik/certs:/certs
+      - ./data/ssl/internal/certs/authentik:/certs/authentik
       - /var/run/docker.sock:/var/run/docker.sock
       - geoip:/geoip
     networks:
@@ -90,7 +99,6 @@ services:
   
   geoipupdate:
     image: "maxmindinc/geoipupdate:latest"
-    container_name: geoip_update
     volumes:
       - "geoip:/usr/share/GeoIP"
     env_file:
