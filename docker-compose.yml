@@ -2,9 +2,10 @@ version: '3.2'
 
 services:
   cfssl:
-    image: cfssl/cfssl
+    build:
+      dockerfile: images/cfssl
     restart: 'no'
-    entrypoint: /bin/bash
+    entrypoint: /bin/ash
     command:
       - /etc/sslconf/gen_crt.sh
     volumes:
