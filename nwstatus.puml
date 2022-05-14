@@ -1,0 +1,51 @@
+@startuml
+
+frame Deployment{
+    frame Backbone{
+    database postgresql
+    }
+    frame Authentication{
+        database redis
+        node authentik
+        node "Authentik Worker" as akworker
+
+        redis -- authentik
+        authentik -- akworker
+    }
+    frame Homeassistant{
+        node homeassistant
+    }
+    frame Ingress{
+        node nginx{
+            component "auth.domain.tld" as authep
+            component "hass.domain.tld" as hassep
+
+            authep -[hidden]- hassep
+        }
+    }
+    frame "Control and Management"{
+        node duckdns
+        node certbot
+        node cfssl
+        duckdns -[hidden]right- certbot
+        certbot -[hidden]right- cfssl
+    }
+
+    actor "External Actor" as external
+    cloud www
+
+}
+external -- www
+www -right- authep
+www -right- hassep
+
+authep -right- authentik
+hassep -right- homeassistant
+
+homeassistant -right- postgresql
+authentik -right- postgresql
+
+duckdns -- www
+
+akworker -[hidden]- homeassistant
+@enduml
