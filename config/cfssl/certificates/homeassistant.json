@@ -1,5 +1,5 @@
 {
-    "CN": "auth.tetofonta.local",
+    "CN": "homeassistant",
     "key": {
       "algo": "rsa",
       "size": 2048
@@ -14,7 +14,7 @@
     }
     ],
     "hosts": [
-      "auth.tetofonta.local",
+      "homeassistant",
       "localhost"
     ]
   }

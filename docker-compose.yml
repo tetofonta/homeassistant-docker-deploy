@@ -3,15 +3,15 @@ version: '3.2'
 services:
   cfssl:
     build:
-      dockerfile: images/cfssl
+      dockerfile: cfssl.dockerfile
+      context: images/
     restart: 'no'
-    entrypoint: /bin/ash
-    command:
-      - /etc/sslconf/gen_crt.sh
     volumes:
       - ./config/cfssl:/etc/sslconf:ro
       - ./data/ssl/internal:/etc/ssl:rw
       - ./data/ssl/public:/etc/tmp_ssl:rw
+    env_file:
+      - env/certbot.env
 
   database:
     image: postgres:alpine
@@ -22,10 +22,27 @@ services:
     env_file: 
       - env/postgre.env
       - env/authentik_postgres.env
-      - env/hass_postgres.env
+      - env/hass_postgre.env
     networks:
       - backbone
   
+  certbot:
+    build:
+      dockerfile: certbot.dockerfile
+      context: images/
+    volumes:
+      - ./data/certwww/:/var/www/certbot/:rw
+      - ./data/ssl/public/:/etc/letsencrypt/:rw
+    env_file:
+      - env/certbot.env
+
+  duckdns:
+    build:
+      dockerfile: duckdns.dockerfile
+      context: images
+    env_file:
+      - env/duckdns.env
+
   nginx:
     image: nginx:stable-alpine
     restart: unless-stopped
@@ -36,8 +53,10 @@ services:
       - ./config/nginx:/etc/nginx/conf.d:ro
       - ./data/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/etc/ca/intermediate_ca_fullchain.pem:ro
       - ./data/ssl/public:/etc/ssl/:ro
+      - ./data/certwww:/var/www/certbot
     depends_on:
       - authentik-server
+      - homeassistant
     networks:
       - auth
       - ingress
@@ -70,6 +89,8 @@ services:
       - env/authentik.env
       - env/authentik_postgres.env
       - env/authentik_redis.env
+      - env/hass_user.env
+      - env/hass_web.env
     volumes:
       - ./one_time_config/authentik.init/:/init
       - ./data/authentik/media:/media
@@ -107,6 +128,7 @@ services:
   
   geoipupdate:
     image: "maxmindinc/geoipupdate:latest"
+    restart: unless-stopped
     volumes:
       - "geoip:/usr/share/GeoIP"
     env_file:
@@ -114,6 +136,33 @@ services:
     networks:
       - auth
 
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    restart: unless-stopped
+    privileged: true
+    environment:
+        - TZ=Europe/Rome
+    volumes:
+        - ./config/homeassistant/config:/config/config
+        - ./config/homeassistant/configuration.yaml:/config/configuration.yaml
+        - ./config/homeassistant/secrets.yaml:/config/secrets.yaml
+        - ./data/homeassistant/.cloud/:/config/.cloud
+        - ./data/homeassistant/.storage/:/config/.storage
+        - ./data/homeassistant/blueprints/:/config/blueprints
+        - ./data/homeassistant/custom_components/:/config/custom_components
+        - ./data/homeassistant/tts/:/config/tts
+        - ./data/ssl/internal/certs/homeassistant:/etc/ssl/:ro
+        - ./external/hass-auth-header/custom_components/auth_header:/config/custom_components/auth_header
+        - ./data/homeassistant/media:/media
+    env_file:
+      - env/hass_postgre.env
+      - env/hass_user.env
+      - env/hass_web.env
+    networks:
+      - backbone
+      - hass
+
+  
 volumes:
   database:
     driver: local

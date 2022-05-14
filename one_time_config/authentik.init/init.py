@@ -44,7 +44,7 @@ def get_user(username):
     return data['results'][0] if 'results' in data and len(data['results']) > 0 else None
 
 def user_set_password(user_id, password):
-    return _authentik_request('POST', f'/api/v3/core/users/{user_id}/set_password/', {'password': password})
+    return _authentik_request('POST', f'/core/users/{user_id}/set_password/', {'password': password})
 
 def create_user(**kwargs):
     return _authentik_request('POST', f"/core/users/", kwargs)
@@ -102,44 +102,51 @@ def wait_for_node():
 
 wait_for_node()
 
+def mk_group(name, parent=None, **kwargs):
+    group = get_group(name)
+    if group is None:
+        group = create_group(name=name, parent=parent['pk'] if parent is not None else None, users=[], **kwargs)
+    return group
+
+def mk_user(username, name, email, password, groups, **kwargs):
+    user = get_user(username)
+    if user is None:
+        user = create_user(username=username, name=name, is_active=True, email=email, groups=list(map(lambda x: x['pk'], groups)), **kwargs) 
+        user_set_password(user['pk'], password)
+    return user
+
+def mk_oauth_provider(name, flow, scopes, **kwargs):
+    prov = get_provider(name)
+    if prov is None:
+        prov = create_oauth_provider(name=name, authorization_flow=flow['pk'], property_mapping=list(map(lambda x: x['pk'], scopes)), **kwargs)
+    return prov
+
+def mk_app(name, slug, provider, **kwargs):
+    app = get_app(name)
+    if app is None:
+        app = create_app(name=name, slug=slug, provider=provider['pk'], **kwargs)
+    return app
+
+def mk_proxy_app(name, slug, flow, **kwargs):
+    prov = get_provider(name + "-proxy")
+    if prov is None:
+        prov = create_proxy_provider(name=name + "-proxy", authorization_flow=flow['pk'], mode='forward_single', **kwargs)
+    app = mk_app(name, slug, prov, **kwargs)
+    out = get_outpost('authentik Embedded Outpost')
+    edit_outpost(out['pk'], name='authentik Embedded Outpost', type='proxy', providers=out['providers'] + [prov['pk']])
+    return app
+#=======================================================================================================================================
 OAUTH_EXPLICIT=get_flow('default-provider-authorization-explicit-consent')
 OAUTH_IMPLICIT=get_flow('default-provider-authorization-implicit-consent')
-
-#Change web certificate
-tenant = get_tenant('authentik-default')
-
-#Create groups
-hass_group = get_group('hass')
-if hass_group is None:
-    hass_group = create_group(name="hass", is_superuser=False, users=[], parent=None)
-
-# Create users
-teto = get_user('teto')
-if teto is None:
-    teto = create_user(username='teto', name='teto', is_active=True, email='st@fon.com', groups=[hass_group['pk']]) 
-    user_set_password(teto['pk'], 'Qwerty1!')
-
-#create providers
 scope_openid = get_scope('openid')
 scope_email = get_scope('email')
 scope_profile = get_scope('profile')
 
-hass_provider = get_provider('hass-oauth')
-if hass_provider is None:
-    hass_provider = create_oauth_provider(name='hass-oauth', authorization_flow=OAUTH_EXPLICIT['pk'], access_code_validity='hours=0;min=10', token_validity='hours=0;min=30', property_mappings=[scope_openid['pk']])
+hass_group = mk_group('homeassistant')
+hass_admin = mk_group('homeassistantadmin', hass_group)
+management_group = mk_group('management')
 
-code_provider = get_provider('code-proxy')
-if code_provider is None:
-    code_provider = create_proxy_provider(name='code-proxy', authorization_flow=OAUTH_EXPLICIT['pk'], property_mappings=[scope_openid['pk']], external_host='https://code.tetofonta.local', mode='forward_single')
+main_user = mk_user(f"{os.environ['HASS_USERNAME']}", f"{os.environ['HASS_NAME']}", f"{os.environ['HASS_EMAIL']}", f"{os.environ['HASS_PASSWORD']}", [hass_admin, management_group])
 
-#create apps
-hass_app = get_app('hass-app')
-if hass_app is None:
-    hass_app = create_app(name='hass-app', slug='hass-app', provider=hass_provider['pk'], policy_engine_mode='any')
-
-code_app = get_app('code-app')
-if code_app is None:
-    code_app = create_app(name='code-app', slug='code-app', provider=code_provider['pk'], policy_engine_mode='any')
-
-out = get_outpost('authentik Embedded Outpost')
-edit_outpost(out['pk'], name='authentik Embedded Outpost', type='proxy', providers=[code_app['pk']])
+#hass
+mk_proxy_app('homeassistant', 'hass-app', OAUTH_EXPLICIT, external_host=f"{os.environ['HASS_URL']}", meta_launch_url=f"{os.environ['HASS_URL']}")

@@ -1,10 +1,11 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 [ ! -d /etc/ssl/ca ] && mkdir -p /etc/ssl/ca
 [ ! -d /etc/ssl/ca_intermediate ] && mkdir -p /etc/ssl/ca_intermediate
 [ ! -d /etc/ssl/certs ] && mkdir -p /etc/ssl/certs
+[ ! -d /etc/tmp_ssl/live/ ] && mkdir -p /etc/tmp_ssl/live/
 
 if [ ! -f  /etc/ssl/ca/ca.pem -o ! -f /etc/ssl/ca/ca-key.pem ]; then
     cfssl gencert -initca /etc/sslconf/ca.json | cfssljson -bare /etc/ssl/ca/ca
@@ -30,10 +31,6 @@ for CRT in /etc/sslconf/certificates/*.json ; do
     NAME=$(basename $CRT .json)
     FULLNAME="/etc/ssl/certs/${NAME}"
 
-    if [ ! -f /etc/sslconf/.regenerate -a -d "$FULLNAME" ]; then
-        continue
-    fi
-
     mkdir -p "$FULLNAME"
 
     cfssl gencert -ca /etc/ssl/ca_intermediate/intermediate_ca.pem -ca-key /etc/ssl/ca_intermediate/intermediate_ca-key.pem -config /etc/sslconf/cfssl.json -profile=host $CRT | cfssljson -bare "${FULLNAME}/${NAME}"
@@ -47,20 +44,22 @@ for CRT in /etc/sslconf/certificates/*.json ; do
     chown -R root:root "${FULLNAME}"
 done
 
-for CRT in /etc/sslconf/tmp_certificates/*.json ; do
-    NAME=$(basename $CRT .json)
-    FULLNAME="/etc/tmp_ssl/${NAME}"
+for NAME in $DOMAINS ; do
+    FULLNAME="/etc/tmp_ssl/live/${NAME}"
 
     if [ ! -f /etc/sslconf/.regenerate -a -d "$FULLNAME" ]; then
         continue
     fi
 
     mkdir -p "$FULLNAME"
+    cp "/etc/sslconf/tmp_cert.json" "/etc/tmp_ssl/${NAME}.json"
+    sed -i "s/<HOST>/${NAME}/g" "/etc/tmp_ssl/${NAME}.json"
 
-    cfssl gencert -ca /etc/ssl/ca_intermediate/intermediate_ca.pem -ca-key /etc/ssl/ca_intermediate/intermediate_ca-key.pem -config /etc/sslconf/cfssl.json -profile=host $CRT | cfssljson -bare "${FULLNAME}/${NAME}"
+    cfssl gencert -ca /etc/ssl/ca_intermediate/intermediate_ca.pem -ca-key /etc/ssl/ca_intermediate/intermediate_ca-key.pem -config /etc/sslconf/cfssl.json -profile=host /etc/tmp_ssl/${NAME}.json | cfssljson -bare "${FULLNAME}/${NAME}"
     cat "${FULLNAME}/${NAME}.pem" /etc/ssl/ca_intermediate/intermediate_ca.pem > "${FULLNAME}/fullchain.pem"
     mv "${FULLNAME}/${NAME}-key.pem" "${FULLNAME}/privkey.pem"
     rm "${FULLNAME}/${NAME}.pem" "${FULLNAME}/${NAME}.csr"
+    rm "/etc/tmp_ssl/${NAME}.json"
 
     chmod 600 "${FULLNAME}/privkey.pem"
     chmod 644 "${FULLNAME}/fullchain.pem"

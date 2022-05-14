@@ -1,0 +1,3 @@
+[submodule "external/hass-auth-header"]
+	path = external/hass-auth-header
+	url = git@github.com:BeryJu/hass-auth-header.git
