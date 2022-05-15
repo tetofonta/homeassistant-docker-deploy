@@ -48,6 +48,7 @@
   - Setup releated
     - [ ] initial setup is required in hass (and needs to be the same as the authentik user)
     - [ ] interactive certbot first run
+    - [ ] setup must be done with user 1000:1000. (still may need chown 1000:1000 -R data/ssl/internal/certs/vscode)
 
 ### Notes
 

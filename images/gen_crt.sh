@@ -57,7 +57,7 @@ for NAME in $DOMAINS ; do
     cfssl gencert -ca /etc/ssl/ca_intermediate/intermediate_ca.pem -ca-key /etc/ssl/ca_intermediate/intermediate_ca-key.pem -config /etc/sslconf/cfssl.json -profile=host /etc/tmp_ssl/${NAME}.json | cfssljson -bare "${FULLNAME}/${NAME}"
     cat "${FULLNAME}/${NAME}.pem" /etc/ssl/ca_intermediate/intermediate_ca.pem > "${FULLNAME}/fullchain.pem"
     mv "${FULLNAME}/${NAME}-key.pem" "${FULLNAME}/privkey.pem"
-    rm "${FULLNAME}/${NAME}.pem" "${FULLNAME}/${NAME}.csr"
+    rm "${FULLNAME}/${NAME}.csr"
     rm "/etc/tmp_ssl/${NAME}.json"
 
     SHORT_NAME=$(echo $NAME | cut -d. -f1)
