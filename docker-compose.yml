@@ -189,7 +189,6 @@ services:
     volumes:
       - ./config/vscode/:/home/coder/.config/code-server/
       - ./config:/home/coder/project/configs/
-      - ./data/vscode:/home/coder/.local/share/code-server/
       - ./docker-compose.yml:/home/coder/project/docker-compose.yml
       - ./data/ssl/internal/certs/vscode:/etc/ssl
     env_file:
