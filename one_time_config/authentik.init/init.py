@@ -177,12 +177,13 @@ mk_proxy_app(
     group="management"
 )
 
-#vscode
-mk_proxy_app(
+#portainer
+mk_oauth_app(
     'Portainer', 
     'portainer-app', 
     OAUTH_EXPLICIT, 
-    external_host=f"{os.environ['PORTAINER_URL']}", 
+    [scope_email, scope_profile, scope_openid], 
+    redirect_uris=f"*",
     meta_launch_url=f"{os.environ['PORTAINER_URL']}",
     meta_description="Portainer",
     group="management"
