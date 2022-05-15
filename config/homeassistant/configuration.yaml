@@ -8,7 +8,7 @@ automation: !include config/automations.yaml
 script: !include config/scripts.yaml
 scene: !include config/scenes.yaml
 http: !include config/http.yaml
-#recorder: !include config/recorder.yaml
+recorder: !include config/recorder.yaml
 homeassistant: !include config/homeassistant.yaml
 auth_header:
   username_header: X-authentik-username
