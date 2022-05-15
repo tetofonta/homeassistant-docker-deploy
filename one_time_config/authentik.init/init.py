@@ -133,7 +133,7 @@ def mk_proxy_app(name, slug, flow, **kwargs):
         prov = create_proxy_provider(name=name + "-proxy", authorization_flow=flow['pk'], mode='forward_single', **kwargs)
     app = mk_app(name, slug, prov, **kwargs)
     out = get_outpost('authentik Embedded Outpost')
-    edit_outpost(out['pk'], name='authentik Embedded Outpost', type='proxy', providers=out['providers'] + [prov['pk']])
+    edit_outpost(out['pk'], name='authentik Embedded Outpost', type='proxy', providers=out['providers'] + [prov['pk']], config=out['config'])
     return app
 #=======================================================================================================================================
 OAUTH_EXPLICIT=get_flow('default-provider-authorization-explicit-consent')
