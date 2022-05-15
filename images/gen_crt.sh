@@ -36,9 +36,10 @@ for CRT in /etc/sslconf/certificates/*.json ; do
     cfssl gencert -ca /etc/ssl/ca_intermediate/intermediate_ca.pem -ca-key /etc/ssl/ca_intermediate/intermediate_ca-key.pem -config /etc/sslconf/cfssl.json -profile=host $CRT | cfssljson -bare "${FULLNAME}/${NAME}"
     cat "${FULLNAME}/${NAME}.pem" /etc/ssl/ca_intermediate/intermediate_ca.pem > "${FULLNAME}/fullchain.pem"
     mv "${FULLNAME}/${NAME}-key.pem" "${FULLNAME}/privkey.pem"
-    rm "${FULLNAME}/${NAME}.pem" "${FULLNAME}/${NAME}.csr"
+    rm "${FULLNAME}/${NAME}.csr"
 
     chmod 700 "${FULLNAME}/privkey.pem"
+    chmod 744 "${FULLNAME}/${NAME}.pem"
     chmod 744 "${FULLNAME}/fullchain.pem"
     chmod 750 "${FULLNAME}"
 done
@@ -69,6 +70,7 @@ for NAME in $DOMAINS ; do
     cp ${FULLNAME}/fullchain.pem /etc/tmp_ssl/live/$SHORT_NAME/fullchain.pem
 
     chmod 700 "${FULLNAME}/privkey.pem"
+    chmod 744 "${FULLNAME}/${NAME}.pem"
     chmod 744 "${FULLNAME}/fullchain.pem"
     chmod 750 "${FULLNAME}"
     chown -R root:root "${FULLNAME}"

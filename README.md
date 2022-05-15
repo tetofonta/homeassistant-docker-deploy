@@ -56,4 +56,6 @@ postrges-12 is used because of a bug in upstream libpq for v.14.
 
 In case of a persisting "initializing" page in homeassistant after the login, try hard reloading/deleting cache.
 
-portainer sso must be configured manually [here](https://goauthentik.io/integrations/services/portainer/)
+portainer sso must be configured manually [here](https://goauthentik.io/integrations/services/portainer/).
+
+for pgadmin connection to database use `database` as hostname
