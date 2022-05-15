@@ -26,6 +26,24 @@ services:
     networks:
       - backbone
   
+  pgadmin:
+    image: dpage/pgadmin4:6.9
+    restart: unless-stopped
+    env_file:
+      - env/pgadmin.env
+      - env/pgadmin_oauth.env
+    user: "${UID}:${GID}"
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin:rw
+      - ./config/pgadmin/config_local.py:/pgadmin4/config_local.py
+      - ./data/ssl/internal/certs/pgadmin/fullchain.pem:/certs/server.cert
+      - ./data/ssl/internal/certs/pgadmin/privkey.pem:/certs/server.key
+    depends_on:
+      - database
+    networks:
+      - mgnmt
+      - auth
+
   certbot:
     build:
       dockerfile: certbot.dockerfile
@@ -89,6 +107,7 @@ services:
       - env/authentik_redis.env
       - env/hass_user.env
       - env/hass_web.env
+      - env/pgadmin_oauth.env
     volumes:
       - ./one_time_config/authentik.init/:/init
       - ./data/authentik/media:/media

@@ -135,6 +135,13 @@ def mk_proxy_app(name, slug, flow, **kwargs):
     out = get_outpost('authentik Embedded Outpost')
     edit_outpost(out['pk'], name='authentik Embedded Outpost', type='proxy', providers=out['providers'] + [prov['pk']], config=out['config'])
     return app
+
+def mk_oauth_app(name, slug, flow, scopes, **kwargs):
+    prov = get_provider(name + "-oauth")
+    if prov is None:
+        prov = create_oauth_provider(name=name + "-oauth", authorization_flow=flow['pk'], property_mappings=list(map(lambda x: x['pk'], scopes)), **kwargs)
+    app = mk_app(name, slug, prov, **kwargs)
+    return app
 #=======================================================================================================================================
 OAUTH_EXPLICIT=get_flow('default-provider-authorization-explicit-consent')
 OAUTH_IMPLICIT=get_flow('default-provider-authorization-implicit-consent')
@@ -149,4 +156,26 @@ management_group = mk_group('management')
 main_user = mk_user(f"{os.environ['HASS_USERNAME']}", f"{os.environ['HASS_NAME']}", f"{os.environ['HASS_EMAIL']}", f"{os.environ['HASS_PASSWORD']}", [hass_admin, management_group])
 
 #hass
-mk_proxy_app('homeassistant', 'hass-app', OAUTH_EXPLICIT, external_host=f"{os.environ['HASS_URL']}", meta_launch_url=f"{os.environ['HASS_URL']}")
+mk_proxy_app(
+    'homeassistant', 
+    'hass-app', 
+    OAUTH_EXPLICIT, 
+    external_host=f"{os.environ['HASS_URL']}", 
+    meta_launch_url=f"{os.environ['HASS_URL']}",
+    meta_description="HomeAssistant",
+    group="homeassistant"
+)
+
+#pgadmin
+mk_oauth_app(
+    'pgadmin', 
+    'pgadmin-app', 
+    OAUTH_EXPLICIT, 
+    [scope_email, scope_profile, scope_openid], 
+    client_id=os.environ['PGADMIN_OAUTH_CLIENT_ID'], 
+    client_secret=os.environ['PGADMIN_OAUTH_CLIENT_SECRET'], 
+    redirect_uris='*',
+    meta_launch_url=f"{os.environ['PGADMIN_URL']}",
+    meta_description="PGAdmin",
+    group="management"
+)
