@@ -20,7 +20,7 @@ COPY --from=builder /workdir/bin/ /usr/bin
 COPY gen_crt.sh /bin/gen_crt.sh
 
 RUN set -ex; apk add --update apk-cron; rm -rf /var/cache/apk/*
-RUN chmod 755 /bin/gen_crt.sh; echo "* * * * *    /bin/gen_crt.sh" > /etc/crontabs/root
+RUN chmod 755 /bin/gen_crt.sh; echo "* * * * *    sh /bin/gen_crt.sh" > /etc/crontabs/root
 RUN echo 'sh /bin/gen_crt.sh; echo "starting cron..."; crond -f -l 8' > /bin/init.sh
 
 VOLUME ["/etc/sslconf"]

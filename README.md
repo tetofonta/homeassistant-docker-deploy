@@ -19,7 +19,7 @@
     - [ ] Mosquitto
   - Management
     - [ ] Portainer
-    - [ ] pgAdmin
+    - [x] pgAdmin
     - [ ] Visual Studio Code Web
   - Utils
     - [x] cfssl for internal certificate management
@@ -38,11 +38,13 @@
 
 ## Known Problems
 
-  - App releated
+  - Homeassistant App releated
     - [ ] iOS app does not work
     - [ ] MFA not working
   - User experience releated
     - [ ] users on hass must coincide with authentik
+    - [ ] pgadmin will 500 on signing after authentik console redirect
+    - [ ] pgadmin is not configured. a new connection has to be made
   - Setup releated
     - [ ] initial setup is required in hass (and needs to be the same as the authentik user)
     - [ ] interactive certbot first run

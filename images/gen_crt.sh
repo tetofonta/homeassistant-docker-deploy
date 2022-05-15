@@ -41,13 +41,12 @@ for CRT in /etc/sslconf/certificates/*.json ; do
     chmod 700 "${FULLNAME}/privkey.pem"
     chmod 744 "${FULLNAME}/fullchain.pem"
     chmod 750 "${FULLNAME}"
-    chown -R root:root "${FULLNAME}"
 done
 
 for NAME in $DOMAINS ; do
     FULLNAME="/etc/tmp_ssl/live/${NAME}"
 
-    if [ ! -f /etc/sslconf/.regenerate -o -d "$FULLNAME" ]; then
+    if [ ! -f /etc/sslconf/.regenerate -a -d "$FULLNAME" ]; then
         continue
     fi
 

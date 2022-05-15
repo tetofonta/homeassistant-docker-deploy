@@ -174,7 +174,7 @@ mk_oauth_app(
     [scope_email, scope_profile, scope_openid], 
     client_id=os.environ['PGADMIN_OAUTH_CLIENT_ID'], 
     client_secret=os.environ['PGADMIN_OAUTH_CLIENT_SECRET'], 
-    redirect_uris='*',
+    redirect_uris=f"{os.environ['PGADMIN_URL']}oauth2/authorize",
     meta_launch_url=f"{os.environ['PGADMIN_URL']}",
     meta_description="PGAdmin",
     group="management"

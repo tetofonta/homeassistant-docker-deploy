@@ -43,6 +43,7 @@ services:
     networks:
       - mgnmt
       - auth
+      - backbone
 
   certbot:
     build:

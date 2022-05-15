@@ -1,6 +1,6 @@
 import os
 
-AUTHENTICATION_SOURCES = 'oauth2'
+AUTHENTICATION_SOURCES = ['oauth2']
 OAUTH2_AUTO_CREATE_USER = True
 OAUTH2_CONFIG = [{
     'OAUTH2_NAME' : 'authentik',
