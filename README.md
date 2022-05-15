@@ -35,8 +35,6 @@
   - [ ] users on hass must coincide with authentik
   - [ ] initial setup is required in hass (and needs to be the same as the authentik user)
   - [ ] apps not added to outpost in authentik
-  - [ ] postgresql not working in homeassistant
-  - [ ] use duckdns for real
 
 ### Notes
 postrges-12 is used because of a bug in upstream libpq for v.14.
