@@ -61,6 +61,14 @@ for NAME in $DOMAINS ; do
     rm "${FULLNAME}/${NAME}.pem" "${FULLNAME}/${NAME}.csr"
     rm "/etc/tmp_ssl/${NAME}.json"
 
+    SHORT_NAME=$(echo $NAME | cut -d. -f1)
+    if [ ! -d /etc/tmp_ssl/live/$SHORT_NAME ]; then
+        mkdir -p /etc/tmp_ssl/live/$SHORT_NAME
+    fi
+
+    cp ${FULLNAME}/privkey.pem /etc/tmp_ssl/live/$SHORT_NAME/privkey.pem
+    cp ${FULLNAME}/fullchain.pem /etc/tmp_ssl/live/$SHORT_NAME/fullchain.pem
+
     chmod 600 "${FULLNAME}/privkey.pem"
     chmod 644 "${FULLNAME}/fullchain.pem"
     chmod 750 "${FULLNAME}"

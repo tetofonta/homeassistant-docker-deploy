@@ -1,4 +1,4 @@
-FROM golang:alpine as builder
+FROM golang:1.18.2-alpine3.15 as builder
 
 WORKDIR /workdir
 
@@ -12,7 +12,7 @@ RUN git clone https://github.com/cloudflare/cfssl_trust.git /etc/cfssl && \
     make bin/rice && ./bin/rice embed-go -i=./cli/serve && \
     make all
 
-FROM alpine:latest
+FROM alpine:3.15
 COPY --from=builder /etc/cfssl /etc/cfssl
 COPY --from=builder /workdir/bin/ /usr/bin
 COPY gen_crt.sh /bin/gen_crt.sh

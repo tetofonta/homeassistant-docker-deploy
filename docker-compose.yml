@@ -14,7 +14,7 @@ services:
       - env/certbot.env
 
   database:
-    image: postgres:alpine
+    image: postgres:12-alpine
     restart: unless-stopped
     volumes:
       - database:/var/lib/postgresql/data
@@ -37,9 +37,7 @@ services:
       - env/certbot.env
 
   duckdns:
-    build:
-      dockerfile: duckdns.dockerfile
-      context: images
+    image: linuxserver/duckdns:latest
     env_file:
       - env/duckdns.env
 
@@ -64,9 +62,9 @@ services:
       - mgnmt
   
   redis:
-    image: redis
+    image: redis:7.0.0-alpine
     restart: unless-stopped
-    entrypoint: /bin/bash
+    entrypoint: /bin/sh
     command: /init/init.sh
     env_file:
       - env/authentik_redis.env
@@ -127,7 +125,7 @@ services:
       - auth
   
   geoipupdate:
-    image: "maxmindinc/geoipupdate:latest"
+    image: "maxmindinc/geoipupdate:v4.9"
     restart: unless-stopped
     volumes:
       - "geoip:/usr/share/GeoIP"
@@ -137,7 +135,7 @@ services:
       - auth
 
   homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:stable
+    image: ghcr.io/home-assistant/home-assistant:2022.5.4
     restart: unless-stopped
     privileged: true
     environment:
