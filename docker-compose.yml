@@ -109,6 +109,8 @@ services:
       - env/hass_user.env
       - env/hass_web.env
       - env/pgadmin_oauth.env
+      - env/vscode.env
+      - env/portainer.env
     volumes:
       - ./one_time_config/authentik.init/:/init
       - ./data/authentik/media:/media
@@ -180,9 +182,35 @@ services:
       - backbone
       - hass
 
+  vscode:
+    image: codercom/code-server:4.4.0
+    networks:
+      - mgnmt
+    volumes:
+      - ./config/vscode/:/home/coder/.config/code-server/
+      - ./config:/home/coder/project/configs/
+      - ./data/vscode:/home/coder/.local/share/code-server/
+      - ./docker-compose.yml:/home/coder/project/docker-compose.yml
+      - ./data/ssl/internal/certs/vscode:/etc/ssl
+    env_file:
+      - env/vscode.env
   
+  portainer:
+    image: portainer/portainer-ce:2.13.1-alpine
+    command: --ssl --sslcert /etc/ssl/fullchain.pem --sslkey /etc/ssl/privkey.pem
+    networks:
+      - mgnmt
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+      - ./data/ssl/internal/certs/portainer/:/etc/ssl/:ro
+    env_file:
+      - env/portainer.env
+
 volumes:
   database:
+    driver: local
+  portainer_data:
     driver: local
   geoip:
     driver: local

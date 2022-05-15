@@ -20,7 +20,7 @@
   - Management
     - [ ] Portainer
     - [x] pgAdmin
-    - [ ] Visual Studio Code Web
+    - [x] Visual Studio Code Web
   - Utils
     - [x] cfssl for internal certificate management
     - [x] certbot
@@ -54,3 +54,5 @@
 postrges-12 is used because of a bug in upstream libpq for v.14.
 
 In case of a persisting "initializing" page in homeassistant after the login, try hard reloading/deleting cache.
+
+portainer sso must be configured manually [here](https://goauthentik.io/integrations/services/portainer/)

@@ -166,6 +166,28 @@ mk_proxy_app(
     group="homeassistant"
 )
 
+#vscode
+mk_proxy_app(
+    'Visual Studio Code', 
+    'vscode-app', 
+    OAUTH_EXPLICIT, 
+    external_host=f"{os.environ['CODE_URL']}", 
+    meta_launch_url=f"{os.environ['CODE_URL']}",
+    meta_description="Visual Studio Code",
+    group="management"
+)
+
+#vscode
+mk_proxy_app(
+    'Portainer', 
+    'portainer-app', 
+    OAUTH_EXPLICIT, 
+    external_host=f"{os.environ['PORTAINER_URL']}", 
+    meta_launch_url=f"{os.environ['PORTAINER_URL']}",
+    meta_description="Portainer",
+    group="management"
+)
+
 #pgadmin
 mk_oauth_app(
     'pgadmin', 
