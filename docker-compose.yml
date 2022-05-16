@@ -36,8 +36,8 @@ services:
     volumes:
       - ./data/pgadmin:/var/lib/pgadmin:rw
       - ./config/pgadmin/config_local.py:/pgadmin4/config_local.py
-      - ./data/ssl/internal/certs/pgadmin/pgadmin.pem:/certs/server.cert
-      - ./data/ssl/internal/certs/pgadmin/privkey.pem:/certs/server.key
+      - ./data/ssl/internal/certs/pgadmin/pgadmin.pem:/certs/server.cert:ro
+      - ./data/ssl/internal/certs/pgadmin/privkey.pem:/certs/server.key:ro
     depends_on:
       - database
     networks:

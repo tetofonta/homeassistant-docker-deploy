@@ -13,5 +13,7 @@ homeassistant: !include config/homeassistant.yaml
 auth_header:
   username_header: X-authentik-username
 
+panel_iframe: !include config/iframes.yaml
+
 logger:
     default: info

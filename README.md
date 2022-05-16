@@ -41,10 +41,12 @@
   - Homeassistant App releated
     - [ ] iOS app does not work
     - [ ] MFA not working
+    - [ ] in app services may require login and error with 'too many reloads'. It's sufficient to reload the view.
   - User experience releated
     - [ ] users on hass must coincide with authentik
     - [ ] pgadmin will 500 on signing after authentik console redirect
     - [ ] pgadmin is not configured. a new connection has to be made
+    - [ ] in homeassistant applications will be authenticated against hass authentik app. it's possible that users not allowed to use those apps will be able to log in from homeassitant
   - Setup releated
     - [ ] initial setup is required in hass (and needs to be the same as the authentik user)
     - [ ] interactive certbot first run
