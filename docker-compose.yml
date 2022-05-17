@@ -183,13 +183,13 @@ services:
       - hass
 
   vscode:
-    image: codercom/code-server:4.4.0
+    image: linuxserver/code-server:4.4.0
     networks:
       - mgnmt
     volumes:
-      - ./config/vscode/:/home/coder/.config/code-server/
-      - ./config:/home/coder/project/configs/
-      - ./docker-compose.yml:/home/coder/project/docker-compose.yml
+      - ./config/vscode/:/config/.config/code-server
+      - ./config:/workspace
+      - ./docker-compose.yml:/workspace/docker-compose.yml
       - ./data/ssl/internal/certs/vscode:/etc/ssl
     env_file:
       - env/vscode.env

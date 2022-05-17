@@ -38,10 +38,10 @@ for CRT in /etc/sslconf/certificates/*.json ; do
     mv "${FULLNAME}/${NAME}-key.pem" "${FULLNAME}/privkey.pem"
     rm "${FULLNAME}/${NAME}.csr"
 
-    chmod 700 "${FULLNAME}/privkey.pem"
-    chmod 744 "${FULLNAME}/${NAME}.pem"
-    chmod 744 "${FULLNAME}/fullchain.pem"
-    chmod 750 "${FULLNAME}"
+    chmod 755 "${FULLNAME}/privkey.pem"
+    chmod 755 "${FULLNAME}/${NAME}.pem"
+    chmod 755 "${FULLNAME}/fullchain.pem"
+    chmod 755 "${FULLNAME}"
 done
 
 for NAME in $DOMAINS ; do
@@ -69,9 +69,9 @@ for NAME in $DOMAINS ; do
     cp ${FULLNAME}/privkey.pem /etc/tmp_ssl/live/$SHORT_NAME/privkey.pem
     cp ${FULLNAME}/fullchain.pem /etc/tmp_ssl/live/$SHORT_NAME/fullchain.pem
 
-    chmod 700 "${FULLNAME}/privkey.pem"
-    chmod 744 "${FULLNAME}/${NAME}.pem"
-    chmod 744 "${FULLNAME}/fullchain.pem"
-    chmod 750 "${FULLNAME}"
+    chmod 755 "${FULLNAME}/privkey.pem"
+    chmod 755 "${FULLNAME}/${NAME}.pem"
+    chmod 755 "${FULLNAME}/fullchain.pem"
+    chmod 755 "${FULLNAME}"
     chown -R root:root "${FULLNAME}"
 done
