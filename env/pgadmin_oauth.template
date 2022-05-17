@@ -1,7 +1,0 @@
-PGADMIN_OAUTH_CLIENT_ID=CUveWKbKaL4gfFaojRF3ni7yd3Y
-PGADMIN_OAUTH_CLIENT_SECRET=VNHjHsRVtvnA3vHPa4YmiiePqLnXMHV9FmtwxkyJzmnjqbMmJpTxkFA9RMd9HhWovCHUvsAbNFgELhcbW4iAwYuWuh4jdsvuJN7RiFcgHkvHURotkzPCyEghjdPfWJnM
-PGADMIN_URL=https://pgadmin.tetofonta.local/
-PGADMIN_TOKEN_URL=https://authdev.tetofonta.local/application/o/token/
-PGADMIN_AUTH_URL=https://authdev.tetofonta.local/application/o/authorize/
-PGADMIN_USERINFO_URL=https://authdev.tetofonta.local/application/o/userinfo/
-PGADMIN_API_BASE=https://authdev.tetofonta.local/

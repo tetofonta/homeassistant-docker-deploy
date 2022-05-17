@@ -5,7 +5,7 @@ services:
     build:
       dockerfile: cfssl.dockerfile
       context: images/
-    restart: 'no'
+    restart: unless-stopped
     volumes:
       - ./config/cfssl:/etc/sslconf:ro
       - ./data/ssl/internal:/etc/ssl:rw
@@ -49,6 +49,7 @@ services:
     build:
       dockerfile: certbot.dockerfile
       context: images/
+    restart: unless-stopped
     volumes:
       - ./data/certwww/:/var/www/certbot/:rw
       - ./data/ssl/public/:/etc/letsencrypt/:rw
@@ -57,6 +58,7 @@ services:
 
   duckdns:
     image: linuxserver/duckdns:latest
+    restart: unless-stopped
     env_file:
       - env/duckdns.env
 
@@ -184,6 +186,7 @@ services:
 
   vscode:
     image: linuxserver/code-server:4.4.0
+    restart: unless-stopped
     networks:
       - mgnmt
     volumes:
@@ -191,6 +194,10 @@ services:
       - ./config:/workspace
       - ./docker-compose.yml:/workspace/docker-compose.yml
       - ./data/ssl/internal/certs/vscode:/etc/ssl
+    environment:
+      - DEFAULT_WORKSPACE=/workspace
+      - PUID=1000
+      - PGID=1000
     env_file:
       - env/vscode.env
   
@@ -205,6 +212,29 @@ services:
       - ./data/ssl/internal/certs/portainer/:/etc/ssl/:ro
     env_file:
       - env/portainer.env
+
+  rclone:
+    build:
+      dockerfile: rclone.dockerfile
+      context: ./images
+    restart: unless-stopped
+    ports:
+      - "5572:5572"
+    volumes:
+      - ./config/rclone:/config/rclone
+      - ./data/rclone/logs:/logs
+      - ./data/ssl/internal/certs/rclone:/ssl:ro
+      - ./data:/backup/data
+      - ./config:/backup/config
+    environment:
+      - PHP_TZ=Europe/Rome
+      - PUID=0
+      - PGID=0
+    env_file:
+      - env/rclone.env
+    networks:
+      - mgnmt
+
 
 networks:
   backbone:
