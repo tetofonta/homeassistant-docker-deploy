@@ -17,7 +17,7 @@ services:
     image: postgres:12-alpine
     restart: unless-stopped
     volumes:
-      - database:/var/lib/postgresql/data
+      - ./data/postgre:/var/lib/postgresql
       - ./one_time_config/postgresql.init:/docker-entrypoint-initdb.d:ro
     env_file: 
       - env/postgre.env
@@ -115,7 +115,7 @@ services:
       - ./one_time_config/authentik.init/:/init
       - ./data/authentik/media:/media
       - ./data/authentik/custom-templates:/templates
-      - geoip:/geoip
+      - ./data/geoip:/geoip
     networks:
       - backbone
       - auth
@@ -141,7 +141,7 @@ services:
       - ./data/authentik/custom-templates:/templates
       - ./data/ssl/internal/certs/authentik-server:/certs/authentik-server
       - /var/run/docker.sock:/var/run/docker.sock
-      - geoip:/geoip
+      - ./data/geoip:/geoip
     networks:
       - backbone
       - auth
@@ -150,7 +150,7 @@ services:
     image: "maxmindinc/geoipupdate:v4.9"
     restart: unless-stopped
     volumes:
-      - "geoip:/usr/share/GeoIP"
+      - "./data/geoip:/usr/share/GeoIP"
     env_file:
       - env/geoip.env
     networks:
@@ -201,18 +201,10 @@ services:
       - mgnmt
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
+      - ./data/portainer:/data
       - ./data/ssl/internal/certs/portainer/:/etc/ssl/:ro
     env_file:
       - env/portainer.env
-
-volumes:
-  database:
-    driver: local
-  portainer_data:
-    driver: local
-  geoip:
-    driver: local
 
 networks:
   backbone:
