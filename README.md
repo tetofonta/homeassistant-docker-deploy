@@ -64,7 +64,15 @@ for pgadmin connection to database use `database` as hostname
 
 ## Config guides
 
+### first setup
+
+#### Dns setup for development
+
+todo. change eventually uid gid in compose?
+
 ### portainer sso
+
+todo
 
 ### rclone Google Drive
 

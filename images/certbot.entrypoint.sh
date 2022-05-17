@@ -1,11 +1,12 @@
 set -x
-for i in $DOMAINS; do
-    if [ -f /etc/letsencrypt/live/$i/.gen ]; then
-        certbot renew --cert-name $i
+for subdomain in $SUBDOMAINS; do
+    full_domain="${subdomain}.${DOMAIN}"
+    if [ -f /etc/letsencrypt/live/$full_domain/.gen ]; then
+        certbot renew --cert-name $full_domain
     else
-        rm -rf /etc/letsencrypt/live/$i
-        rm -rf /etc/letsencrypt/archive/$i
-        rm -rf /etc/letsencrypt/renewal/$i.conf
+        rm -rf /etc/letsencrypt/live/$full_domain
+        rm -rf /etc/letsencrypt/archive/$full_domain
+        rm -rf /etc/letsencrypt/renewal/$full_domain.conf
         
         email_arg=""
         if [ -z $EMAIL ]; then
@@ -24,17 +25,16 @@ for i in $DOMAINS; do
             staging="--staging"
         fi
 
-        certbot certonly -v --force-renewal --webroot -w /var/www/certbot $agree $email_arg $staging -d $i 
-        touch /etc/letsencrypt/live/$i/.gen
+        certbot certonly -v --force-renewal --webroot -w /var/www/certbot $agree $email_arg $staging -d $full_domain 
+        touch /etc/letsencrypt/live/$full_domain/.gen
     fi
 
-    SHORT_NAME=$(echo $i | cut -d. -f1)
-    if [ ! -d /etc/letsencrypt/live/$SHORT_NAME ]; then
-        mkdir -p /etc/letsencrypt/live/$SHORT_NAME
+    if [ ! -d /etc/letsencrypt/live/$subdomain ]; then
+        mkdir -p /etc/letsencrypt/live/$subdomain
     fi
 
-    cp /etc/letsencrypt/live/$i/privkey.pem /etc/letsencrypt/live/$SHORT_NAME/privkey.pem
-    cp /etc/letsencrypt/live/$i/fullchain.pem /etc/letsencrypt/live/$SHORT_NAME/fullchain.pem
+    cp /etc/letsencrypt/live/$i/privkey.pem /etc/letsencrypt/live/$subdomain/privkey.pem
+    cp /etc/letsencrypt/live/$i/fullchain.pem /etc/letsencrypt/live/$subdomain/fullchain.pem
 
     sleep 1
 done

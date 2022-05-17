@@ -1,4 +1,4 @@
 /data/*
 !/data/.keep
 /env/*.env
-rclone.conf
+config/rclone/rclone.conf

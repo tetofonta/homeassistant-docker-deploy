@@ -1,0 +1,10 @@
+vscode:
+  title: Visual Studio Code
+  url: /service/vscode
+  icon: mdi:microsoft-visual-studio-code
+  require_admin: true
+rclone:
+  title: Backup
+  url: /service/rclone
+  icon: mdi:cloud-upload
+  require_admin: true

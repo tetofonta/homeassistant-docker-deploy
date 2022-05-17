@@ -113,6 +113,7 @@ services:
       - env/pgadmin_oauth.env
       - env/vscode.env
       - env/portainer.env
+      - env/rclone.env
     volumes:
       - ./one_time_config/authentik.init/:/init
       - ./data/authentik/media:/media

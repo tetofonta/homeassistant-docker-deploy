@@ -13,15 +13,15 @@ def _authentik_request(method, url, data={}):
     #todo handle pagination
     if method == 'GET':
         req = get(authentic_host+url, headers={'Authorization': f"Bearer {token}", 'Accept': 'application/json'}, verify=False)
-        print(req.status_code, req.content)
+        print(url, req.status_code, req.content)
         return json.loads(req.content) if req.status_code == 200 or req.status_code == 201 else {}
     if method == 'PUT':
         req = put(authentic_host+url, data=json.dumps(data), headers={'Authorization': f"Bearer {token}", 'Accept': 'application/json', 'Content-Type': 'application/json'}, verify=False)
-        print(url, req.status_code, req.content, data)
+        print(url, data, req.status_code, req.content, data)
         return json.loads(req.content) if req.status_code == 200 or req.status_code == 201 else {}
     if method == 'POST':
         req = post(authentic_host+url, data=json.dumps(data), headers={'Authorization': f"Bearer {token}", 'Accept': 'application/json', 'Content-Type': 'application/json'}, verify=False)
-        print(url, req.status_code, req.content, data)
+        print(url, data, req.status_code, req.content, data)
         return json.loads(req.content) if req.status_code == 200 or req.status_code == 201 else {}
 
 def get_group(group_name):
@@ -131,6 +131,7 @@ def mk_proxy_app(name, slug, flow, **kwargs):
     prov = get_provider(name + "-proxy")
     if prov is None:
         prov = create_proxy_provider(name=name + "-proxy", authorization_flow=flow['pk'], mode='forward_single', **kwargs)
+    print(prov)
     app = mk_app(name, slug, prov, **kwargs)
     out = get_outpost('authentik Embedded Outpost')
     edit_outpost(out['pk'], name='authentik Embedded Outpost', type='proxy', providers=out['providers'] + [prov['pk']], config=out['config'])
@@ -156,8 +157,7 @@ management_group = mk_group('management')
 main_user = mk_user(f"{os.environ['HASS_USERNAME']}", f"{os.environ['HASS_NAME']}", f"{os.environ['HASS_EMAIL']}", f"{os.environ['HASS_PASSWORD']}", [hass_admin, management_group])
 
 #hass
-mk_proxy_app(
-    'homeassistant', 
+mk_proxy_app('homeassistant', 
     'hass-app', 
     OAUTH_EXPLICIT, 
     external_host=f"{os.environ['HASS_URL']}", 
@@ -167,8 +167,7 @@ mk_proxy_app(
 )
 
 #vscode
-mk_proxy_app(
-    'Visual Studio Code', 
+mk_proxy_app('Visual Studio Code', 
     'vscode-app', 
     OAUTH_EXPLICIT, 
     external_host=f"{os.environ['CODE_URL']}", 
@@ -177,9 +176,18 @@ mk_proxy_app(
     group="management"
 )
 
+#rclone
+mk_proxy_app('rclone', 
+    'rclone-app', 
+    OAUTH_EXPLICIT, 
+    external_host=f"{os.environ['RCLONE_URL']}", 
+    meta_launch_url=f"{os.environ['RCLONE_URL']}",
+    meta_description="rclone backup",
+    group="management"
+)
+
 #portainer
-mk_oauth_app(
-    'Portainer', 
+mk_oauth_app('Portainer', 
     'portainer-app', 
     OAUTH_EXPLICIT, 
     [scope_email, scope_profile, scope_openid], 
@@ -190,8 +198,7 @@ mk_oauth_app(
 )
 
 #pgadmin
-mk_oauth_app(
-    'pgadmin', 
+mk_oauth_app('pgadmin', 
     'pgadmin-app', 
     OAUTH_EXPLICIT, 
     [scope_email, scope_profile, scope_openid], 
