@@ -33,8 +33,8 @@ for subdomain in $SUBDOMAINS; do
         mkdir -p /etc/letsencrypt/live/$subdomain
     fi
 
-    cp /etc/letsencrypt/live/$i/privkey.pem /etc/letsencrypt/live/$subdomain/privkey.pem
-    cp /etc/letsencrypt/live/$i/fullchain.pem /etc/letsencrypt/live/$subdomain/fullchain.pem
+    cp /etc/letsencrypt/live/$full_domain/privkey.pem /etc/letsencrypt/live/$subdomain/privkey.pem
+    cp /etc/letsencrypt/live/$full_domain/fullchain.pem /etc/letsencrypt/live/$subdomain/fullchain.pem
 
     sleep 1
 done

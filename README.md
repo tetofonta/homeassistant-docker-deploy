@@ -55,6 +55,7 @@
 ### Notes
 
 postrges-12 is used because of a bug in upstream libpq for v.14.
+if you're triyng to run data directory on ntfs, youll'need to use a docker volume for postgres (or move the data directorty over ext4)
 
 In case of a persisting "initializing" page in homeassistant after the login, try hard reloading/deleting cache.
 

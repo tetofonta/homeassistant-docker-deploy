@@ -1,8 +1,7 @@
 docker-compose pull
 docker-compose build
-docker-compose up cfssl -d
-sleep 15
+docker-compose run --rm cfssl /bin/gen_crt.sh
 docker-compose up -d
-sleep 120
-docker-compose exec certbot sh /certbot.entrypoint.sh
+sleep 10
+docker-compose run --rm certbot /certbot.entrypoint.sh
 docker-compose exec nginx nginx -s reload

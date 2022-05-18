@@ -154,6 +154,7 @@ hass_group = mk_group('homeassistant')
 hass_admin = mk_group('homeassistantadmin', hass_group)
 management_group = mk_group('management')
 
+
 main_user = mk_user(f"{os.environ['HASS_USERNAME']}", f"{os.environ['HASS_NAME']}", f"{os.environ['HASS_EMAIL']}", f"{os.environ['HASS_PASSWORD']}", [hass_admin, management_group])
 
 #hass
@@ -207,5 +208,18 @@ mk_oauth_app('pgadmin',
     redirect_uris=f"{os.environ['PGADMIN_URL']}oauth2/authorize",
     meta_launch_url=f"{os.environ['PGADMIN_URL']}",
     meta_description="PGAdmin",
+    group="management"
+)
+
+#graphana
+mk_oauth_app('graphana', 
+    'graphana-app', 
+    OAUTH_EXPLICIT, 
+    [scope_email, scope_profile, scope_openid], 
+    client_id=os.environ['GRAPHANA_OAUTH_CLIENT_ID'], 
+    client_secret=os.environ['GRAPHANA_OAUTH_CLIENT_SECRET'], 
+    redirect_uris=f"{os.environ['GRAPHANA_URL']}login/generic_oauth",
+    meta_launch_url=f"{os.environ['GRAPHANA_URL']}",
+    meta_description="graphana",
     group="management"
 )

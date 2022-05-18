@@ -17,12 +17,13 @@ services:
     image: postgres:12-alpine
     restart: unless-stopped
     volumes:
-      - ./data/postgre:/var/lib/postgresql/data
+      - database:/var/lib/postgresql/data
       - ./one_time_config/postgresql.init:/docker-entrypoint-initdb.d:ro
     env_file: 
       - env/postgre.env
       - env/authentik_postgres.env
       - env/hass_postgre.env
+      - env/graphana_postgre.env
     networks:
       - backbone
   
@@ -114,6 +115,7 @@ services:
       - env/vscode.env
       - env/portainer.env
       - env/rclone.env
+      - env/graphana.env
     volumes:
       - ./one_time_config/authentik.init/:/init
       - ./data/authentik/media:/media
@@ -236,6 +238,36 @@ services:
     networks:
       - mgnmt
 
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    restart: unless-stopped
+    volumes:
+      - ./config/prometheus:/etc/prometheus
+      - ./data/prometheus:/prometheus
+    networks:
+      - mgnmt
+  
+  grafana:
+    image: grafana/grafana-oss:8.5.2
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    restart: unless-stopped
+    networks:
+      - mgnmt
+      - auth #temporary
+      - backbone
+    volumes:
+      - ./data/graphana:/var/lib/grafana
+      - ./config/graphana:/etc/grafana
+      - ./one_time_config/graphana.init/:/etc/grafana/provisioning/
+      - ./data/ssl/internal/certs/graphana:/ssl:ro
+    env_file:
+      - env/graphana.env
+      - env/graphana_postgre.env
+
+volumes:
+  database:
+    driver: local
 
 networks:
   backbone:
