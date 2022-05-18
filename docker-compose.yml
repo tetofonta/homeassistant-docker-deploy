@@ -17,7 +17,7 @@ services:
     image: postgres:12-alpine
     restart: unless-stopped
     volumes:
-      - ./data/postgre:/var/lib/postgresql
+      - ./data/postgre:/var/lib/postgresql/data
       - ./one_time_config/postgresql.init:/docker-entrypoint-initdb.d:ro
     env_file: 
       - env/postgre.env

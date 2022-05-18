@@ -44,7 +44,8 @@ for CRT in /etc/sslconf/certificates/*.json ; do
     chmod 755 "${FULLNAME}"
 done
 
-for NAME in $DOMAINS ; do
+for SUB in $SUBDOMAINS ; do
+    NAME="${SUB}.${DOMAIN}"
     FULLNAME="/etc/tmp_ssl/live/${NAME}"
 
     if [ ! -f /etc/sslconf/.regenerate -a -d "$FULLNAME" ]; then
@@ -61,13 +62,12 @@ for NAME in $DOMAINS ; do
     rm "${FULLNAME}/${NAME}.csr"
     rm "/etc/tmp_ssl/${NAME}.json"
 
-    SHORT_NAME=$(echo $NAME | cut -d. -f1)
-    if [ ! -d /etc/tmp_ssl/live/$SHORT_NAME ]; then
-        mkdir -p /etc/tmp_ssl/live/$SHORT_NAME
+    if [ ! -d /etc/tmp_ssl/live/$SUB ]; then
+        mkdir -p /etc/tmp_ssl/live/$SUB
     fi
 
-    cp ${FULLNAME}/privkey.pem /etc/tmp_ssl/live/$SHORT_NAME/privkey.pem
-    cp ${FULLNAME}/fullchain.pem /etc/tmp_ssl/live/$SHORT_NAME/fullchain.pem
+    cp -v ${FULLNAME}/privkey.pem /etc/tmp_ssl/live/$SUB/privkey.pem
+    cp -v ${FULLNAME}/fullchain.pem /etc/tmp_ssl/live/$SUB/fullchain.pem
 
     chmod 755 "${FULLNAME}/privkey.pem"
     chmod 755 "${FULLNAME}/${NAME}.pem"
