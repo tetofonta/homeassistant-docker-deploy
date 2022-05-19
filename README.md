@@ -10,6 +10,7 @@
     - [x] Redis
   - Ingress
     - [x] Nginx
+    - [ ] Wireguard
   - HomeAssistant Stack
     - [x] Homeassistant
     - [ ] influxdb
@@ -18,11 +19,18 @@
     - [ ] Zigbee2mqtt
     - [ ] Mosquitto
   - Management
-    - [ ] Portainer
+    - [x] Portainer
     - [x] pgAdmin
     - [x] Visual Studio Code Web
-    - [ ] prometheus + exportes
-    - [ ] graphana
+    - [x] prometheus + exportes
+    - [x] graphana
+  - Prometheus exported data
+    - [x] Prometheus
+    - [x] Certbot
+    - [x] Docker metrics
+    - [x] Nginx metrics
+    - [x] Postgresql metrics
+    - [x] Host metrics
   - Utils
     - [x] cfssl for internal certificate management
     - [x] certbot

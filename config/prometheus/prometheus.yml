@@ -23,3 +23,6 @@ scrape_configs:
   - job_name: 'system'
     static_configs:
       - targets: ['172.253.0.1:9100']
+  - job_name: 'certbot'
+    static_configs:
+      - targets: ['certbot:8556']

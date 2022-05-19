@@ -24,9 +24,9 @@ sudo chown 65534:65534 "${DATA_DIRECTORY}/prometheus"
 
 mkdir -p "${DATA_DIRECTORY}/ssl"
 
-docker-compose pull
-docker-compose build
+#docker-compose pull
+#docker-compose build
 docker-compose run --rm cfssl /bin/gen_crt.sh
 docker-compose up -d
-docker-compose run --rm certbot /certbot.entrypoint.sh
-docker-compose exec nginx nginx -s reload
+#docker-compose run --rm certbot /certbot.entrypoint.sh
+#docker-compose exec nginx nginx -s reload

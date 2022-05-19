@@ -4,7 +4,7 @@ services:
   cfssl:
     build:
       dockerfile: cfssl.dockerfile
-      context: images/
+      context: images/cfssl
     restart: unless-stopped
     volumes:
       - ./config/cfssl:/etc/sslconf:ro
@@ -49,13 +49,17 @@ services:
   certbot:
     build:
       dockerfile: certbot.dockerfile
-      context: images/
+      context: images/certbot
     restart: unless-stopped
     volumes:
       - ${DATA_DIRECTORY:-./data}/certwww/:/var/www/certbot/:rw
       - ${DATA_DIRECTORY:-./data}/ssl/public/:/etc/letsencrypt/:rw
     env_file:
       - env/certbot.env
+    networks:
+      - mgnmt
+    ports:
+      - 8556:8556
 
   duckdns:
     image: linuxserver/duckdns:latest
@@ -219,7 +223,7 @@ services:
   rclone:
     build:
       dockerfile: rclone.dockerfile
-      context: ./images
+      context: images/rclone
     restart: unless-stopped
     ports:
       - "5572:5572"
