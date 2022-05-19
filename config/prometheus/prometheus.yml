@@ -19,7 +19,7 @@ scrape_configs:
       - targets: ['authentik-server:9300']
   - job_name: 'docker'
     static_configs:
-      - targets: ['host.docker.internal:9323']
+      - targets: ['172.253.0.1:9323']
   - job_name: 'system'
     static_configs:
-      - targets: ['host.docker.internal:9100']
+      - targets: ['172.253.0.1:9100']

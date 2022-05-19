@@ -134,6 +134,8 @@ def mk_proxy_app(name, slug, flow, **kwargs):
     print(prov)
     app = mk_app(name, slug, prov, **kwargs)
     out = get_outpost('authentik Embedded Outpost')
+    print()
+    print(out, prov)
     edit_outpost(out['pk'], name='authentik Embedded Outpost', type='proxy', providers=out['providers'] + [prov['pk']], config=out['config'])
     return app
 
@@ -223,3 +225,100 @@ mk_oauth_app('graphana',
     meta_description="graphana",
     group="management"
 )
+
+#{
+#  "pk": "0be99620-f0f8-4d04-840a-3a8a2ec9e0fa",
+#  "name": "authentik Embedded Outpost",
+#  "type": "proxy",
+#  "providers": [
+#    1,
+#    2,
+#    3
+#  ],
+#  "providers_obj": [
+#    {
+#      "pk": 1,
+#      "name": "homeassistant-proxy",
+#      "authorization_flow": "80c8a9ab-4f15-4eb5-ae3d-28246d22828c",
+#      "property_mappings": [
+#        "5e86e398-8db7-47e0-a364-f93339c1d488",
+#        "c3061ff4-fa8e-4e4b-8b8a-c667b7539d50",
+#        "af6aeb55-212f-4624-bdac-943c9776ce9c",
+#        "672d4179-1cbc-43d9-a2a2-9d99cb972e72"
+#      ],
+#      "component": "",
+#      "assigned_application_slug": "hass-app",
+#      "assigned_application_name": "homeassistant",
+#      "verbose_name": "provider",
+#      "verbose_name_plural": "providers",
+#      "meta_model_name": "authentik_core.provider"
+#    },
+#    {
+#      "pk": 2,
+#      "name": "Visual Studio Code-proxy",
+#      "authorization_flow": "80c8a9ab-4f15-4eb5-ae3d-28246d22828c",
+#      "property_mappings": [
+#        "5e86e398-8db7-47e0-a364-f93339c1d488",
+#        "c3061ff4-fa8e-4e4b-8b8a-c667b7539d50",
+#        "af6aeb55-212f-4624-bdac-943c9776ce9c",
+#        "672d4179-1cbc-43d9-a2a2-9d99cb972e72"
+#      ],
+#      "component": "",
+#      "assigned_application_slug": "vscode-app",
+#      "assigned_application_name": "Visual Studio Code",
+#      "verbose_name": "provider",
+#      "verbose_name_plural": "providers",
+#      "meta_model_name": "authentik_core.provider"
+#    },
+#    {
+#      "pk": 3,
+#      "name": "rclone-proxy",
+#      "authorization_flow": "80c8a9ab-4f15-4eb5-ae3d-28246d22828c",
+#      "property_mappings": [
+#        "5e86e398-8db7-47e0-a364-f93339c1d488",
+#        "c3061ff4-fa8e-4e4b-8b8a-c667b7539d50",
+#        "af6aeb55-212f-4624-bdac-943c9776ce9c",
+#        "672d4179-1cbc-43d9-a2a2-9d99cb972e72"
+#      ],
+#      "component": "",
+#      "assigned_application_slug": "rclone-app",
+#      "assigned_application_name": "rclone",
+#      "verbose_name": "provider",
+#      "verbose_name_plural": "providers",
+#      "meta_model_name": "authentik_core.provider"
+#    }
+#  ],
+#  "service_connection": "c10e4eb1-eb00-4df9-9ea0-43bba07aedb4",
+#  "service_connection_obj": {
+#    "pk": "c10e4eb1-eb00-4df9-9ea0-43bba07aedb4",
+#    "name": "Local Docker connection",
+#    "local": true,
+#    "component": "",
+#    "verbose_name": "Outpost Service-Connection",
+#    "verbose_name_plural": "Outpost Service-Connections",
+#    "meta_model_name": "authentik_outposts.outpostserviceconnection"
+#  },
+#  "token_identifier": "ak-outpost-0be99620-f0f8-4d04-840a-3a8a2ec9e0fa-api",
+#  "config": {
+#    "log_level": "info",
+#    "docker_labels": null,
+#    "authentik_host": "https://sso.fontanahass.duckdns.org",
+#    "docker_network": null,
+#    "container_image": null,
+#    "docker_map_ports": true,
+#    "kubernetes_replicas": 1,
+#    "kubernetes_namespace": "default",
+#    "authentik_host_browser": "",
+#    "object_naming_template": "ak-outpost-%(name)s",
+#    "authentik_host_insecure": false,
+#    "kubernetes_service_type": "ClusterIP",
+#    "kubernetes_image_pull_secrets": [],
+#    "kubernetes_disabled_components": [
+#      "deployment",
+#      "secret"
+#    ],
+#    "kubernetes_ingress_annotations": {},
+#    "kubernetes_ingress_secret_name": "authentik-outpost-tls"
+#  },
+#  "managed": "goauthentik.io/outposts/embedded"
+#}

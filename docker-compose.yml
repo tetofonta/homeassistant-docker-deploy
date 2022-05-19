@@ -8,8 +8,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./config/cfssl:/etc/sslconf:ro
-      - ./data/ssl/internal:/etc/ssl:rw
-      - ./data/ssl/public:/etc/tmp_ssl:rw
+      - ${DATA_DIRECTORY:-./data}/ssl/internal:/etc/ssl:rw
+      - ${DATA_DIRECTORY:-./data}/ssl/public:/etc/tmp_ssl:rw
     env_file:
       - env/certbot.env
 
@@ -17,7 +17,7 @@ services:
     image: postgres:12-alpine
     restart: unless-stopped
     volumes:
-      - database:/var/lib/postgresql/data
+      - ${DATA_DIRECTORY:-./data}/postgresql:/var/lib/postgresql/data:rw
       - ./one_time_config/postgresql.init:/docker-entrypoint-initdb.d:ro
     env_file: 
       - env/postgre.env
@@ -35,10 +35,10 @@ services:
       - env/pgadmin_oauth.env
     user: "${UID}:${GID}"
     volumes:
-      - ./data/pgadmin:/var/lib/pgadmin:rw
-      - ./config/pgadmin/config_local.py:/pgadmin4/config_local.py
-      - ./data/ssl/internal/certs/pgadmin/pgadmin.pem:/certs/server.cert:ro
-      - ./data/ssl/internal/certs/pgadmin/privkey.pem:/certs/server.key:ro
+      - ${DATA_DIRECTORY:-./data}/pgadmin:/var/lib/pgadmin:rw
+      - ./config/pgadmin/config_local.py:/pgadmin4/config_local.py:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/pgadmin/pgadmin.pem:/certs/server.cert:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/pgadmin/privkey.pem:/certs/server.key:ro
     depends_on:
       - database
     networks:
@@ -52,8 +52,8 @@ services:
       context: images/
     restart: unless-stopped
     volumes:
-      - ./data/certwww/:/var/www/certbot/:rw
-      - ./data/ssl/public/:/etc/letsencrypt/:rw
+      - ${DATA_DIRECTORY:-./data}/certwww/:/var/www/certbot/:rw
+      - ${DATA_DIRECTORY:-./data}/ssl/public/:/etc/letsencrypt/:rw
     env_file:
       - env/certbot.env
 
@@ -71,9 +71,9 @@ services:
       - 80:80
     volumes:
       - ./config/nginx:/etc/nginx/conf.d:ro
-      - ./data/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/etc/ca/intermediate_ca_fullchain.pem:ro
-      - ./data/ssl/public:/etc/ssl/:ro
-      - ./data/certwww:/var/www/certbot
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/etc/ca/intermediate_ca_fullchain.pem:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/public:/etc/ssl/:ro
+      - ${DATA_DIRECTORY:-./data}/certwww:/var/www/certbot:rw
     depends_on:
       - authentik-server
       - homeassistant
@@ -117,10 +117,10 @@ services:
       - env/rclone.env
       - env/graphana.env
     volumes:
-      - ./one_time_config/authentik.init/:/init
-      - ./data/authentik/media:/media
-      - ./data/authentik/custom-templates:/templates
-      - ./data/geoip:/geoip
+      - ./one_time_config/authentik.init/:/init:ro
+      - ${DATA_DIRECTORY:-./data}/authentik/media:/media:rw
+      - ${DATA_DIRECTORY:-./data}/authentik/custom-templates:/templates:rw
+      - ${DATA_DIRECTORY:-./data}/geoip:/geoip:rw
     networks:
       - backbone
       - auth
@@ -142,11 +142,11 @@ services:
       - env/authentik_redis.env
     user: root
     volumes:
-      - ./data/authentik/media:/media
-      - ./data/authentik/custom-templates:/templates
-      - ./data/ssl/internal/certs/authentik-server:/certs/authentik-server
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./data/geoip:/geoip
+      - ${DATA_DIRECTORY:-./data}/authentik/media:/media:rw
+      - ${DATA_DIRECTORY:-./data}/authentik/custom-templates:/templates:rw
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/authentik-server:/certs/authentik-server:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DATA_DIRECTORY:-./data}/geoip:/geoip:rw
     networks:
       - backbone
       - auth
@@ -155,7 +155,7 @@ services:
     image: "maxmindinc/geoipupdate:v4.9"
     restart: unless-stopped
     volumes:
-      - "./data/geoip:/usr/share/GeoIP"
+      - ${DATA_DIRECTORY:-./data}/geoip:/usr/share/GeoIP:rw
     env_file:
       - env/geoip.env
     networks:
@@ -168,17 +168,17 @@ services:
     environment:
         - TZ=Europe/Rome
     volumes:
-        - ./config/homeassistant/config:/config/config
-        - ./config/homeassistant/configuration.yaml:/config/configuration.yaml
-        - ./config/homeassistant/secrets.yaml:/config/secrets.yaml
-        - ./data/homeassistant/.cloud/:/config/.cloud
-        - ./data/homeassistant/.storage/:/config/.storage
-        - ./data/homeassistant/blueprints/:/config/blueprints
-        - ./data/homeassistant/custom_components/:/config/custom_components
-        - ./data/homeassistant/tts/:/config/tts
-        - ./data/ssl/internal/certs/homeassistant:/etc/ssl/:ro
-        - ./external/hass-auth-header/custom_components/auth_header:/config/custom_components/auth_header
-        - ./data/homeassistant/media:/media
+        - ./config/homeassistant/config:/config/config:rw
+        - ./config/homeassistant/configuration.yaml:/config/configuration.yaml:rw
+        - ./config/homeassistant/secrets.yaml:/config/secrets.yaml:rw
+        - ${DATA_DIRECTORY:-./data}/homeassistant/.cloud/:/config/.cloud:rw
+        - ${DATA_DIRECTORY:-./data}/homeassistant/.storage/:/config/.storage:rw
+        - ${DATA_DIRECTORY:-./data}/homeassistant/blueprints/:/config/blueprints:rw
+        - ${DATA_DIRECTORY:-./data}/homeassistant/custom_components/:/config/custom_components:rw
+        - ${DATA_DIRECTORY:-./data}/homeassistant/tts/:/config/tts:rw
+        - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/homeassistant:/etc/ssl/:ro
+        - ./external/hass-auth-header/custom_components/auth_header:/config/custom_components/auth_header:ro
+        - ${DATA_DIRECTORY:-./data}/homeassistant/media:/media:rw
     env_file:
       - env/hass_postgre.env
       - env/hass_user.env
@@ -186,17 +186,17 @@ services:
     networks:
       - backbone
       - hass
-
+  
   vscode:
     image: linuxserver/code-server:4.4.0
     restart: unless-stopped
     networks:
       - mgnmt
     volumes:
-      - ./config/vscode/:/config/.config/code-server
-      - ./config:/workspace
-      - ./docker-compose.yml:/workspace/docker-compose.yml
-      - ./data/ssl/internal/certs/vscode:/etc/ssl
+      - ./config/vscode/:/config/.config/code-server:ro
+      - ./config:/workspace:rw
+      - ./docker-compose.yml:/workspace/docker-compose.yml:rw
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/vscode:/etc/ssl:ro
     environment:
       - DEFAULT_WORKSPACE=/workspace
       - PUID=1000
@@ -210,9 +210,9 @@ services:
     networks:
       - mgnmt
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./data/portainer:/data
-      - ./data/ssl/internal/certs/portainer/:/etc/ssl/:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DATA_DIRECTORY:-./data}/portainer:/data:rw
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/portainer/:/etc/ssl/:ro
     env_file:
       - env/portainer.env
 
@@ -224,11 +224,11 @@ services:
     ports:
       - "5572:5572"
     volumes:
-      - ./config/rclone:/config/rclone
-      - ./data/rclone/logs:/logs
-      - ./data/ssl/internal/certs/rclone:/ssl:ro
-      - ./data:/backup/data
-      - ./config:/backup/config
+      - ./config/rclone:/config/rclone:rw
+      - ${DATA_DIRECTORY:-./data}/rclone/logs:/logs:rw
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/rclone:/ssl:ro
+      - ${DATA_DIRECTORY:-./data}:/backup/data:rw
+      - ./config:/backup/config:rw
     environment:
       - PHP_TZ=Europe/Rome
       - PUID=0
@@ -242,26 +242,24 @@ services:
     image: prom/prometheus:v2.35.0
     restart: unless-stopped
     volumes:
-      - ./config/prometheus:/etc/prometheus
-      - ./data/prometheus:/prometheus
+      - ./config/prometheus:/etc/prometheus:ro
+      - ${DATA_DIRECTORY:-./data}/prometheus:/prometheus:rw
     networks:
       - mgnmt
       - auth
   
   graphana:
     image: grafana/grafana-oss:8.5.2
-    environment:
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     restart: unless-stopped
     networks:
       - mgnmt
       - auth #temporary
       - backbone
     volumes:
-      - ./data/graphana:/var/lib/grafana
+      - ${DATA_DIRECTORY:-./data}/graphana:/var/lib/grafana:rw
       - ./config/graphana:/etc/grafana
-      - ./one_time_config/graphana.init/:/etc/grafana/provisioning/
-      - ./data/ssl/internal/certs/graphana:/ssl:ro
+      - ./one_time_config/graphana.init/:/etc/grafana/provisioning/:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/graphana:/ssl:ro
     env_file:
       - env/graphana.env
       - env/graphana_postgre.env
@@ -281,12 +279,6 @@ services:
     networks:
       - mgnmt
     command: -nginx.scrape-uri=http://nginx:8080/stub_status
-
-
-
-volumes:
-  database:
-    driver: local
 
 networks:
   backbone:

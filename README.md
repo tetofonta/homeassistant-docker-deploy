@@ -21,6 +21,8 @@
     - [ ] Portainer
     - [x] pgAdmin
     - [x] Visual Studio Code Web
+    - [ ] prometheus + exportes
+    - [ ] graphana
   - Utils
     - [x] cfssl for internal certificate management
     - [x] certbot
@@ -47,6 +49,7 @@
     - [ ] pgadmin will 500 on signing after authentik console redirect
     - [ ] pgadmin is not configured. a new connection has to be made
     - [ ] in homeassistant applications will be authenticated against hass authentik app. it's possible that users not allowed to use those apps will be able to log in from homeassitant
+    - [ ] authentik needs to refresh outpost configuration from gui at first startup
   - Setup releated
     - [ ] initial setup is required in hass (and needs to be the same as the authentik user)
     - [ ] interactive certbot first run
