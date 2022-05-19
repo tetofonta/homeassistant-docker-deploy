@@ -181,15 +181,20 @@ services:
         - ${DATA_DIRECTORY:-./data}/homeassistant/custom_components/:/config/custom_components:rw
         - ${DATA_DIRECTORY:-./data}/homeassistant/tts/:/config/tts:rw
         - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/homeassistant:/etc/ssl/:ro
+        - ${DATA_DIRECTORY:-./data}/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/etc/ssl/intermediate_ca_fullchain.pem:ro
         - ./external/hass-auth-header/custom_components/auth_header:/config/custom_components/auth_header:ro
+        - ${DATA_DIRECTORY:-./data}/homeassistant/influx/:/config/influx:rw
         - ${DATA_DIRECTORY:-./data}/homeassistant/media:/media:rw
     env_file:
       - env/hass_postgre.env
       - env/hass_user.env
       - env/hass_web.env
+      - env/influxdb.env
     networks:
       - backbone
       - hass
+    depends_on:
+      - influxdb
   
   vscode:
     image: linuxserver/code-server:4.4.0
@@ -283,6 +288,25 @@ services:
     networks:
       - mgnmt
     command: -nginx.scrape-uri=http://nginx:8080/stub_status
+
+  influxdb:
+    image: influxdb:2.2-alpine
+    restart: unless-stopped
+    volumes:
+        - ./config/influxdb:/etc/influxdb2
+        - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/influxdb:/ssl:ro
+        - ${DATA_DIRECTORY:-./data}/homeassistant/influx/:/config/influx:rw
+        - ${DATA_DIRECTORY:-./data}/influxdb:/var/lib/influxdb2:ro
+        - ./one_time_config/influx.init:/init:rw
+    networks:
+      - backbone
+      - mgnmt
+    environment:
+      - INFLUXD_CONFIG_PATH=/etc/influxdb2
+    env_file:
+      - env/influxdb.env
+    ports:
+      - 8086:8086
 
 networks:
   backbone:

@@ -1,0 +1,9 @@
+query-concurrency: 20
+query-queue-size: 15
+secret-store: vault
+session-length: 120
+
+tls-cert: /ssl/fullchain.pem
+tls-key: /ssl/privkey.pem
+
+#ui-disabled: true

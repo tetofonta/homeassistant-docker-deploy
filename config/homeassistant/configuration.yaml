@@ -19,3 +19,4 @@ logger:
     default: info
 
 prometheus: !include config/prometheus.yaml
+influxdb: !include config/influxdb.yaml

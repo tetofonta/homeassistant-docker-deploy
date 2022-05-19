@@ -1,0 +1,11 @@
+api_version: 2
+ssl: false
+host: influxdb
+port: 8086
+token: <todo>
+organization: 93bcf7611bc95975
+bucket: home_assistant
+tags:
+    source: HA
+tags_attributes:
+    - friendly_name

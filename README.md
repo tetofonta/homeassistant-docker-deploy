@@ -74,6 +74,8 @@ portainer sso must be configured manually [here](https://goauthentik.io/integrat
 
 for pgadmin connection to database use `database` as hostname
 
+influx is not authenticated and needs self authentication for hass
+
 ## Config guides
 
 ### first setup
