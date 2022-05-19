@@ -17,3 +17,5 @@ panel_iframe: !include config/iframes.yaml
 
 logger:
     default: info
+
+prometheus: !include config/prometheus.yaml

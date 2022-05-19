@@ -246,8 +246,9 @@ services:
       - ./data/prometheus:/prometheus
     networks:
       - mgnmt
+      - auth
   
-  grafana:
+  graphana:
     image: grafana/grafana-oss:8.5.2
     environment:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
@@ -264,6 +265,24 @@ services:
     env_file:
       - env/graphana.env
       - env/graphana_postgre.env
+
+  prometheus-postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.10.1
+    restart: unless-stopped
+    env_file:
+      - env/postgre.env
+    networks:
+      - mgnmt
+      - backbone
+  
+  nginx-postgres-exporter:
+    image: nginx/nginx-prometheus-exporter:0.10.0
+    restart: unless-stopped
+    networks:
+      - mgnmt
+    command: -nginx.scrape-uri=http://nginx:8080/stub_status
+
+
 
 volumes:
   database:
