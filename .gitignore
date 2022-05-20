@@ -2,3 +2,4 @@
 !/data/.keep
 /env/*.env
 config/rclone/rclone.conf
+influx-configs

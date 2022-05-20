@@ -1,10 +1,13 @@
 api_version: 2
-ssl: false
+
+ssl: true
+verify_ssl: false
+
 host: influxdb
 port: 8086
-token: <todo>
-organization: 93bcf7611bc95975
-bucket: home_assistant
+token: !env_var INFLUX_TOKEN
+organization: !env_var INFLUX_ORG_NAME
+bucket: !env_var INFLUX_BUCKET
 tags:
     source: HA
 tags_attributes:

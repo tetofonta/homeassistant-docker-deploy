@@ -15,6 +15,7 @@ sudo chown 472:472 "${DATA_DIRECTORY}/graphana"
 mkdir -p "${DATA_DIRECTORY}/homeassistant"
 mkdir -p "${DATA_DIRECTORY}/pgadmin"
 mkdir -p "${DATA_DIRECTORY}/portainer"
+mkdir -p "${DATA_DIRECTORY}/influxdb"
 
 mkdir -p "${DATA_DIRECTORY}/postgresql"
 sudo chown 70:70 "${DATA_DIRECTORY}/postgresql"

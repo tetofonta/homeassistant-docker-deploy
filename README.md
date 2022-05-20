@@ -329,6 +329,16 @@ e/n/d/r/c/s/q> <b>q</b>
 
 ### Docker prometheus metrics.
 
+
 see [this](https://docs.docker.com/config/daemon/prometheus/)
 
 you'll need to install node_exporter
+
+## steps
+
+- configure env
+- first_run.sh
+- configure homeassistant
+- configure influx (internal)
+- configure homeassistant for influx
+- configure graphana and homeassistant
