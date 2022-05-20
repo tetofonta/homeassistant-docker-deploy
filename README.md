@@ -44,7 +44,7 @@
 ## Setup
 
   - Change subdomains in nginx config files. _there's a file for each service_
-  - Create env files from templates. _e.g `mkdir env; export BASE_DOMAIN='tetofonta.local'; for f in env_templates/*.template; do sh ./template_configurator.sh --non-interactive "$f" "$(echo "$f" | sed 's/env_templates/env/' | sed 's/.template//')"; done`_
+  - Create env files from templates. _e.g `mkdir env; export BASE_DOMAIN='tetofonta.local'; for f in env_templates/*.template; do bash ./template_configurator.sh "$f" "$(echo "$f" | sed 's/env_templates/env/' | sed 's/.template//')"; done`_
   - Run.
 
 ## Known Problems
