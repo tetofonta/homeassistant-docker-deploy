@@ -7,4 +7,4 @@ tls-key: /ssl/privkey.pem
 
 reporting-disabled: true
 
-#ui-disabled: true
+ui-disabled: true

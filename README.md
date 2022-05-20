@@ -24,6 +24,7 @@
     - [x] Visual Studio Code Web
     - [x] prometheus + exportes
     - [x] graphana
+    - [ ] snort
   - Prometheus exported data
     - [x] Prometheus
     - [x] Certbot
@@ -43,7 +44,7 @@
 ## Setup
 
   - Change subdomains in nginx config files. _there's a file for each service_
-  - Create env files from templates. _e.g `cd env; for file in *.template; do; cp -v "$file" "$(echo $file | sed 's/.template//')"; done`_
+  - Create env files from templates. _e.g `mkdir env; export BASE_DOMAIN='tetofonta.local'; for f in env_templates/*.template; do sh ./template_configurator.sh --non-interactive "$f" "$(echo "$f" | sed 's/env_templates/env/' | sed 's/.template//')"; done`_
   - Run.
 
 ## Known Problems
@@ -61,7 +62,7 @@
   - Setup releated
     - [ ] initial setup is required in hass (and needs to be the same as the authentik user)
     - [ ] interactive certbot first run
-    - [ ] setup must be done with user 1000:1000. (still may need chown 1000:1000 -R data/ssl/internal/certs/vscode)
+    - [x] setup must be done with user 1000:1000. (still may need chown 1000:1000 -R data/ssl/internal/certs/vscode)
 
 ### Notes
 
@@ -339,6 +340,4 @@ you'll need to install node_exporter
 - configure env
 - first_run.sh
 - configure homeassistant
-- configure influx (internal)
-- configure homeassistant for influx
 - configure graphana and homeassistant
