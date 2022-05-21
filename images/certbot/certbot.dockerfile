@@ -16,7 +16,7 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 RUN set -ex; pip install prometheus_client pytz
 
 RUN chmod 755 /certbot.entrypoint.sh
-RUN echo '[ ! -f /etc/crontabs/root ] && echo "1 */12 * * *    sh /certbot.entrypoint.sh" > /etc/crontabs/root; nohup python3 /prometheus_exporter.py ; echo "starting cron..."; crond -f -l 8' > /bin/init.sh
+RUN echo -e '[ ! -f /cronjob/root ] && echo "1 */12 * * *    sh /certbot.entrypoint.sh" > /cronjob/root \n nohup python3 /prometheus_exporter.py & \n echo "starting cron..." \n crontab /cronjob/root \n exec crond -f -l 0' > /bin/init.sh
 
 RUN mkdir -p /etc/letsencrypt
 RUN mkdir -p /var/www/certbot

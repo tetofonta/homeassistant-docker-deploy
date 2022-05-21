@@ -24,7 +24,6 @@
     - [x] Visual Studio Code Web
     - [x] prometheus + exportes
     - [x] graphana
-    - [ ] snort
   - Prometheus exported data
     - [x] Prometheus
     - [x] Certbot
@@ -97,8 +96,6 @@ After all containers are up
 
 <pre>
 docker-compose exec rclone rclone config
-
-sudo docker-compose exec rclone rclone config
 
 No remotes found, make a new one?
 n) New remote

@@ -21,7 +21,7 @@ COPY gen_crt.sh /bin/gen_crt.sh
 
 RUN set -ex; apk add --update apk-cron; rm -rf /var/cache/apk/*
 RUN chmod 755 /bin/gen_crt.sh;
-RUN echo '[ ! -f /etc/crontabs/root ] && echo "* * * * *    sh /bin/gen_crt.sh" > /etc/crontabs/root; echo "starting cron..."; crond -f -l 8' > /bin/init.sh
+RUN echo -e '[ ! -f /cronjob/root ] && echo "*/15 * * * *    sh /bin/gen_crt.sh" > /cronjob/root \n echo "starting cron..." \n crontab /cronjob/root \n exec crond -f -l 0' > /bin/init.sh
 
 VOLUME ["/etc/sslconf"]
 VOLUME ["/etc/ssl"]
