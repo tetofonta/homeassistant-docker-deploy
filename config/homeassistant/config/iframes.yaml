@@ -8,3 +8,8 @@ rclone:
   url: /service/rclone
   icon: mdi:cloud-upload
   require_admin: true
+grafana:
+  title: Backup
+  url: /service/grafana
+  icon: mdi:chart-tree
+  require_admin: false

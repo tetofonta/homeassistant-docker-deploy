@@ -220,7 +220,7 @@ mk_oauth_app('graphana',
     [scope_email, scope_profile, scope_openid], 
     client_id=os.environ['GRAPHANA_OAUTH_CLIENT_ID'], 
     client_secret=os.environ['GRAPHANA_OAUTH_CLIENT_SECRET'], 
-    redirect_uris=f"{os.environ['GRAPHANA_URL']}login/generic_oauth",
+    redirect_uris=f"{os.environ['GRAPHANA_URL']}service/grafana/login/generic_oauth",
     meta_launch_url=f"{os.environ['GRAPHANA_URL']}",
     meta_description="graphana",
     group="management"
