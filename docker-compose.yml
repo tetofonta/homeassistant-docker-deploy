@@ -10,6 +10,7 @@ services:
       - ./config/cfssl:/etc/sslconf:ro
       - ${DATA_DIRECTORY:-./data}/ssl/internal:/etc/ssl:rw
       - ${DATA_DIRECTORY:-./data}/ssl/public:/etc/tmp_ssl:rw
+      - ./config/cronjobs/cfssl.cron:/etc/crontabs/root:rw
     env_file:
       - env/certbot.env
 
@@ -54,6 +55,7 @@ services:
     volumes:
       - ${DATA_DIRECTORY:-./data}/certwww/:/var/www/certbot/:rw
       - ${DATA_DIRECTORY:-./data}/ssl/public/:/etc/letsencrypt/:rw
+      - ./config/cronjobs/certbot.cron:/etc/crontabs/root:rw
     env_file:
       - env/certbot.env
     networks:
@@ -237,6 +239,7 @@ services:
       - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/rclone:/ssl:ro
       - ${DATA_DIRECTORY:-./data}:/backup/data:rw
       - ./config:/backup/config:rw
+      - ./config/cronjobs/rclone.cron:/etc/crontabs/root:rw
     environment:
       - PHP_TZ=Europe/Rome
       - PUID=0

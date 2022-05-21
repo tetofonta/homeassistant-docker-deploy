@@ -13,7 +13,7 @@ scrape_configs:
       - targets: ['prometheus-postgres-exporter:9187']
   - job_name: 'nginx'
     static_configs:
-      - targets: ['nginx-postgres-exporter:9113']
+      - targets: ['prometheus-nginx-exporter:9113']
   - job_name: 'authentik'
     static_configs:
       - targets: ['authentik-server:9300']
