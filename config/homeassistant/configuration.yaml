@@ -20,3 +20,5 @@ logger:
 
 prometheus: !include config/prometheus.yaml
 influxdb: !include config/influxdb.yaml
+
+mqtt: !include config/mqtt.yaml

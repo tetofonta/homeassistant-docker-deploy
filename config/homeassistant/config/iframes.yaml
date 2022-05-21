@@ -9,7 +9,12 @@ rclone:
   icon: mdi:cloud-upload
   require_admin: true
 grafana:
-  title: Backup
+  title: Grafana
   url: /service/grafana
   icon: mdi:chart-tree
   require_admin: false
+zigbee2mqtt:
+  title: zigbee2mqtt
+  url: /service/zigbee
+  icon: mdi:zigbee
+  require_admin: true

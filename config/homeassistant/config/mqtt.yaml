@@ -1,0 +1,6 @@
+client_id: homeassistant
+broker: mosquitto
+port: 8883
+certificate: /ssl/ca.pem
+client_cert: /etc/ssl/fullchain.pem
+client_key: /etc/ssl/privkey.pem

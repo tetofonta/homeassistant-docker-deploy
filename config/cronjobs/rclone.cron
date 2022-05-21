@@ -1,2 +1,3 @@
 12  2   *   *   *       [ ! -z "$BACKUP_DESTINATION" ] && rclone -vvvv sync /backup ${BACKUP_DESTINATION}/daily
-20  3   3   *   *       [ ! -z "$BACKUP_DESTINATION" ] && rclone -vvvv sync /backup ${BACKUP_DESTINATION}/monthly
+24  2   *   *   sat     [ ! -z "$BACKUP_DESTINATION" ] && rclone -vvvv sync /backup ${BACKUP_DESTINATION}/weekly
+36  3   3   *   *       [ ! -z "$BACKUP_DESTINATION" ] && rclone -vvvv sync /backup ${BACKUP_DESTINATION}/monthly

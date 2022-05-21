@@ -1,0 +1,34 @@
+serial:
+  port: /dev/ttyACM0
+mqtt:
+  server: mqtt://mosquitto:8883
+  base_topic: zigbee_mqtt
+  ca: /ssl/ca/intermediate_ca_fullchain.pem
+  key: /ssl/cert/privkey.pem
+  cert: /ssl/cert/fullchain.pem
+  client_id: zigbee
+  reject_unauthorized: true
+  include_device_information: true
+  keepalive: 60
+  version: 5
+  force_disable_retain: false
+frontend:
+  port: 8080
+  host: 0.0.0.0
+homeassistant:
+  discovery_topic: homeassistant
+  status_topic: homeassistant/status
+advanced:
+  transmit_power: 20
+  cache_state: true
+  cache_state_persistent: true
+  cache_state_send_on_startup: true
+  last_seen: epoch
+  elapsed: true
+  homeassistant_legacy_entity_attributes: false
+  legacy_api: false
+  legacy_availability_payload: false
+  pan_id: 6754
+  network_key: '!secret network_key'
+device_options:
+  legacy: false
