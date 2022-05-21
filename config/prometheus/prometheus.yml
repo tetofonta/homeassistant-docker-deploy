@@ -26,3 +26,6 @@ scrape_configs:
   - job_name: 'certbot'
     static_configs:
       - targets: ['certbot:8556']
+  - job_name: 'rclone'
+    static_configs:
+      - targets: ['rclone:5572']
