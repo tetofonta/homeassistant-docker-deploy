@@ -104,7 +104,7 @@ services:
       - ./one_time_config/redis.init/:/init:ro
 
   authentik-server:
-    image: ghcr.io/goauthentik/server:2022.5.1
+    image: ghcr.io/goauthentik/server:2022.5.2
     restart: unless-stopped
     depends_on:
       - cfssl
@@ -136,7 +136,7 @@ services:
       - 9000:9443
   
   authentik-worker:
-    image: ghcr.io/goauthentik/server:2022.5.1
+    image: ghcr.io/goauthentik/server:2022.5.2
     restart: unless-stopped
     command: worker
     depends_on:
@@ -324,6 +324,7 @@ services:
     restart: unless-stopped
     networks:
       - hass
+  
   zigbee:
     image: koenkk/zigbee2mqtt
     restart: unless-stopped

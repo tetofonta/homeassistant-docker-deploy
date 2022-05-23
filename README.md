@@ -13,11 +13,11 @@
     - [ ] Wireguard
   - HomeAssistant Stack
     - [x] Homeassistant
-    - [ ] influxdb
+    - [x] influxdb
     - [ ] Appdaemon
     - [ ] AdGuard
-    - [ ] Zigbee2mqtt
-    - [ ] Mosquitto
+    - [x] Zigbee2mqtt
+    - [x] Mosquitto
   - Management
     - [x] Portainer
     - [x] pgAdmin
@@ -61,7 +61,7 @@
   - Setup releated
     - [ ] initial setup is required in hass (and needs to be the same as the authentik user)
     - [ ] interactive certbot first run
-    - [x] setup must be done with user 1000:1000. (still may need chown 1000:1000 -R data/ssl/internal/certs/vscode)
+    - [ ] nginx configuration does not reload on certbot certificates update
 
 ### Notes
 
@@ -335,6 +335,9 @@ you'll need to install node_exporter
 ## steps
 
 - configure env
+- configure zigbee2mqtt secret.yaml from template
 - first_run.sh
+- configure backups
 - configure homeassistant
-- configure graphana and homeassistant
+- configure mqtt in homeassistant
+- configure portainer sso
