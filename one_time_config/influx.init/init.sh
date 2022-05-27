@@ -5,7 +5,7 @@ influxd &
 while :; do
     RET=$(influx ping --host https://localhost:8086 --skip-verify)
     echo $RET
-    if [ $RET == "OK" ]; then
+    if [ "$RET" == "OK" ]; then
         break
     fi
     sleep 1

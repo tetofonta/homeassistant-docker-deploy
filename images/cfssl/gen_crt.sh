@@ -27,13 +27,30 @@ if [ ! -f  /etc/ssl/ca_intermediate/intermediate_ca.pem -o ! -f /etc/ssl/ca_inte
     chown -R root:root /etc/ssl/ca_intermediate/ 
 fi
 
-for CRT in /etc/sslconf/certificates/*.json ; do
+for CRT in /etc/sslconf/certificates/server/*.json ; do
     NAME=$(basename $CRT .json)
     FULLNAME="/etc/ssl/certs/${NAME}"
 
     mkdir -p "$FULLNAME"
 
     cfssl gencert -ca /etc/ssl/ca_intermediate/intermediate_ca.pem -ca-key /etc/ssl/ca_intermediate/intermediate_ca-key.pem -config /etc/sslconf/cfssl.json -profile=host $CRT | cfssljson -bare "${FULLNAME}/${NAME}"
+    cat "${FULLNAME}/${NAME}.pem" /etc/ssl/ca_intermediate/intermediate_ca.pem > "${FULLNAME}/fullchain.pem"
+    mv "${FULLNAME}/${NAME}-key.pem" "${FULLNAME}/privkey.pem"
+    rm "${FULLNAME}/${NAME}.csr"
+
+    chmod 755 "${FULLNAME}/privkey.pem"
+    chmod 755 "${FULLNAME}/${NAME}.pem"
+    chmod 755 "${FULLNAME}/fullchain.pem"
+    chmod 755 "${FULLNAME}"
+done
+
+for CRT in /etc/sslconf/certificates/client/*.json ; do
+    NAME=$(basename $CRT .json)
+    FULLNAME="/etc/ssl/certs/client/${NAME}"
+
+    mkdir -p "$FULLNAME"
+
+    cfssl gencert -ca /etc/ssl/ca_intermediate/intermediate_ca.pem -ca-key /etc/ssl/ca_intermediate/intermediate_ca-key.pem -config /etc/sslconf/cfssl.json -profile=client $CRT | cfssljson -bare "${FULLNAME}/${NAME}"
     cat "${FULLNAME}/${NAME}.pem" /etc/ssl/ca_intermediate/intermediate_ca.pem > "${FULLNAME}/fullchain.pem"
     mv "${FULLNAME}/${NAME}-key.pem" "${FULLNAME}/privkey.pem"
     rm "${FULLNAME}/${NAME}.csr"

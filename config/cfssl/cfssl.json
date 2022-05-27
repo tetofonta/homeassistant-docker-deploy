@@ -26,7 +26,15 @@
             "signing",
             "digital signing",
             "key encipherment",
-            "server auth",
+            "server auth"
+          ],
+          "expiry": "8760h"
+        },
+        "client": {
+          "usages": [
+            "signing",
+            "digital signing",
+            "key encipherment",
             "client auth"
           ],
           "expiry": "8760h"

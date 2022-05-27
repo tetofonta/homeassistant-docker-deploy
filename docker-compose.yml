@@ -25,7 +25,7 @@ services:
       - env/postgre.env
       - env/authentik_postgres.env
       - env/hass_postgre.env
-      - env/graphana_postgre.env
+      - env/grafana_postgre.env
     networks:
       - backbone
   
@@ -35,7 +35,7 @@ services:
     env_file:
       - env/pgadmin.env
       - env/pgadmin_oauth.env
-    user: "${UID:-1000}:${GID:-1000}"
+    user: "0:0"
     volumes:
       - ${DATA_DIRECTORY:-./data}/pgadmin:/var/lib/pgadmin:rw
       - ./config/pgadmin/config_local.py:/pgadmin4/config_local.py:ro
@@ -72,10 +72,13 @@ services:
       - env/duckdns.env
 
   nginx:
-    image: nginx:stable-alpine
+    build:
+      dockerfile: nginx.dockerfile
+      context: images/nginx-quic
     restart: unless-stopped
     ports:
-      - 443:443
+      - 443:443/tcp
+      - 443:443/udp
       - 80:80
     volumes:
       - ./config/nginx:/etc/nginx/conf.d:ro
@@ -123,7 +126,7 @@ services:
       - env/vscode.env
       - env/portainer.env
       - env/rclone.env
-      - env/graphana.env
+      - env/grafana.env
     volumes:
       - ./one_time_config/authentik.init/:/init:ro
       - ${DATA_DIRECTORY:-./data}/authentik/media:/media:rw
@@ -186,6 +189,7 @@ services:
         - ${DATA_DIRECTORY:-./data}/homeassistant/tts/:/config/tts:rw
         - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/homeassistant:/etc/ssl/:ro
         - ${DATA_DIRECTORY:-./data}/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/ssl/ca.pem
+        - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/client/homeassistant:/etc/clientssl/:ro
         - ./external/hass-auth-header/custom_components/auth_header:/config/custom_components/auth_header:ro
         - ${DATA_DIRECTORY:-./data}/homeassistant/influx/:/config/influx:rw
         - ${DATA_DIRECTORY:-./data}/homeassistant/media:/media:rw
@@ -262,7 +266,7 @@ services:
       - mgnmt
       - auth
   
-  graphana:
+  grafana:
     image: grafana/grafana-oss:8.5.2
     restart: unless-stopped
     networks:
@@ -270,13 +274,13 @@ services:
       - auth #temporary
       - backbone
     volumes:
-      - ${DATA_DIRECTORY:-./data}/graphana:/var/lib/grafana:rw
-      - ./config/graphana:/etc/grafana
-      - ./one_time_config/graphana.init/:/etc/grafana/provisioning/:ro
-      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/graphana:/ssl:ro
+      - ${DATA_DIRECTORY:-./data}/grafana:/var/lib/grafana:rw
+      - ./config/grafana:/etc/grafana
+      - ./one_time_config/grafana.init/:/etc/grafana/provisioning/:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/grafana:/ssl:ro
     env_file:
-      - env/graphana.env
-      - env/graphana_postgre.env
+      - env/grafana.env
+      - env/grafana_postgre.env
 
   prometheus-postgres-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter:v0.10.1
@@ -333,7 +337,7 @@ services:
       - ./config/zigbee2mqtt/secret.yaml:/app/data/secret.yaml
       - ${DATA_DIRECTORY:-./data}/zigbee2mqtt:/app/data
       - ${DATA_DIRECTORY:-./data}/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/ssl/ca/intermediate_ca_fullchain.pem:ro
-      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/zigbee:/ssl/cert
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/client/zigbee:/ssl/cert
       - /run/udev:/run/udev:ro
     environment:
       - TZ=Europe/Rome
