@@ -72,9 +72,7 @@ services:
       - env/duckdns.env
 
   nginx:
-    build:
-      dockerfile: nginx.dockerfile
-      context: images/nginx-quic
+    image: nginx:stable-alpine
     restart: unless-stopped
     ports:
       - 443:443/tcp
@@ -107,7 +105,7 @@ services:
       - ./one_time_config/redis.init/:/init:ro
 
   authentik-server:
-    image: ghcr.io/goauthentik/server:2022.5.2
+    image: ghcr.io/goauthentik/server:2022.5.3
     restart: unless-stopped
     depends_on:
       - cfssl
@@ -139,7 +137,7 @@ services:
       - 9000:9443
   
   authentik-worker:
-    image: ghcr.io/goauthentik/server:2022.5.2
+    image: ghcr.io/goauthentik/server:2022.5.3
     restart: unless-stopped
     command: worker
     depends_on:
@@ -216,8 +214,8 @@ services:
       - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/vscode:/etc/ssl:ro
     environment:
       - DEFAULT_WORKSPACE=/workspace
-      - PUID=1000
-      - PGID=1000
+      - PUID=${UID}
+      - PGID=${GID}
     env_file:
       - env/vscode.env
   

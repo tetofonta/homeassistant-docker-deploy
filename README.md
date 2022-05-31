@@ -187,11 +187,14 @@ y/e/d> <b>y</b>
 Current remotes:
 
 Name                 Type
-====                 ====
-homeassistant_backup drive
+mkdir -p "${DATA_DIRECTORY}/grafana"
+sudo chown 472:472 "${DATA_DIRECTORY}/grafana"
 
-e) Edit existing remote
-n) New remote
+mkdir -p "${DATA_DIRECTORY}/homeassistant"
+mkdir -p "${DATA_DIRECTORY}/pgadmin"
+mkdir -p "${DATA_DIRECTORY}/portainer"
+mkdir -p "${DATA_DIRECTORY}/influxdb"
+
 d) Delete remote
 r) Rename remote
 c) Copy remote
@@ -333,9 +336,103 @@ see [this](https://docs.docker.com/config/daemon/prometheus/)
 you'll need to install node_exporter
 
 ## steps
+Those install steps are made for ubuntu server on a RPi4 4GB with default user hass as 1001:1001
+### Recommanded: Configure SWAP
+```bash
+sudo fallocate -l 8G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab
+sudo swapon --show
+sudo free -h
+sudo sysctl vm.swappiness=10
+```
 
-- configure env
-- configure zigbee2mqtt secret.yaml from template
+
+### Install docker and docker-compose
+```bash
+sudo apt-get install ca-certificates curl gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io
+sudo usermod -aG docker $(whoami)
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo reboot
+```
+
+### Recommanded: Install prometheus node exported
+```bash
+#get the correct download link from https://prometheus.io/download/#node_exporter
+wget https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-arm64.tar.gz -O node_exporter.tar.gz
+tar xvfz node_exporter.tar.gz
+mv node_exporter-* node_exporter
+cat << EOF | sudo tee /etc/systemd/system/prometheus-node-exporter.service
+[Unit]
+Description=prometheus node exporter
+
+[Service]
+Type=simple
+ExecStart=$PWD/node_exporter/node_exporter --web.listen-address="0.0.0.0:9100"
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload
+sudo systemctl enable prometheus-node-exporter
+sudo systemctl start prometheus-node-exporter
+sudo systemctl status prometheus-node-exporter
+```
+
+### Clone the repository
+```bash
+git clone git@github.com:tetofonta/homeassistant-docker-deploy.git --recursive
+cd homeassistant-docker-deploy.git
+```
+
+### Configure zigbee dongle
+```bash
+ls /dev/serial/by-id
+#if your device appears skip everithing else in here.
+sudo apt-get purge modemmanager
+sudo systemctl disable hciuart
+sudo apt install linux-modules-extra-raspi
+sudo reboot
+```
+
+### Configure
+```bash
+#configure environment files
+mkdir env
+for file in env_templates/*; do echo $file; bash template_configurator.sh $file $(echo $file | sed 's/env_templates/env/' | sed 's/.template//'); done
+
+#configure zigbee2mqtt
+mv config/zigbee2mqtt/secret.yaml.template config/zigbee2mqtt/secret.yaml
+#eventually edit config/zigbee2mqtt/secret.yaml
+#find the zigbee coordinator device 
+ls /dev/serial/by-id
+echo "export ZIGBEE_COORDINATOR=/dev/serial/by-id/<your device path>" >> ~/.bashrc
+#logout and login
+
+#choose where to save the data directory
+echo "export DATA_DIRECTORY=./data" >> ~/.bashrc
+```
+
+### Optional: configure certificates and ca (config/cfssl)
+edit those files
+### First run
+```bash
+echo "export UID" >> ~/.bashrc
+echo "export GID" >> ~/.bashrc
+
+docker-compose pull
+docker-compose build #this will requre some time
+sh ./first_run.sh
+```
+
 - first_run.sh
 - configure backups
 - configure homeassistant
