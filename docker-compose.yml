@@ -189,7 +189,7 @@ services:
         - ${DATA_DIRECTORY:-./data}/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/ssl/ca.pem
         - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/client/homeassistant:/etc/clientssl/:ro
         - ./external/hass-auth-header/custom_components/auth_header:/config/custom_components/auth_header:ro
-        - ./external/panel-redirect:/config/local/panel-redirect:ro
+        - ./external/panel-redirect:/config/www/panel-redirect:ro
         - ${DATA_DIRECTORY:-./data}/homeassistant/influx/:/config/influx:rw
         - ${DATA_DIRECTORY:-./data}/homeassistant/media:/media:rw
     env_file:
@@ -345,6 +345,23 @@ services:
     devices:
       - ${ZIGBEE_COORDINATOR:-/dev/ttyUSB0}:/dev/ttyACM0
 
+  appdaemon:
+    image: acockburn/appdaemon:latest
+    restart: unless-stopped
+    volumes:
+      - ./config/appdaemon:/config
+      - ${DATA_DIRECTORY:-./data}/appdaemon:/data
+      - ./apps:/apps
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/appdaemon:/ssl:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/client/appdaemon:/clientssl:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/hoemassistant/fullchain.pem:/certs/homeassistant.pem:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/mosquitto/fullchain.pem:/certs/mosquitto.pem:ro
+    env_file:
+      - env/appdaemon.env
+    depends_on:
+      - mosquitto
+
+    
 
 networks:
   backbone:

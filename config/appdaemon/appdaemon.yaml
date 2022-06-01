@@ -1,0 +1,18 @@
+appdaemon:
+  time_zone: CET
+  latitude: 51.725
+  longitude: 14.3434
+  elevation: 0
+  plugins:
+    HASS:
+      type: hass
+      ha_url: https://homeassistant:8123
+    MQTT:
+      type: mqtt
+      namespace: mqtt
+      client_host: mosquitto
+      client_port: 8883
+      client_transport: tcp
+      client_cert: /clientssl/fullchain.pem
+
+  app_dir: /apps
