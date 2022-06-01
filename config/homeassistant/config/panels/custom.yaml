@@ -1,0 +1,7 @@
+- name: panel-redirect-logout
+  url_path: panel-redirect-logout
+  sidebar_title: Disconnect
+  sidebar_icon: mdi:exit-to-app
+  module_url: /local/panel-redirect/panel-redirect.js
+  config:
+    target: /outpost.goauthentik.io/sign_out

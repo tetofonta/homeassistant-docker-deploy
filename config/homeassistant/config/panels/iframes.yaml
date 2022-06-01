@@ -1,0 +1,20 @@
+vscode:
+  title: Visual Studio Code
+  url: /service/vscode
+  icon: mdi:microsoft-visual-studio-code
+  require_admin: true
+rclone:
+  title: Backup
+  url: /service/rclone
+  icon: mdi:cloud-upload
+  require_admin: true
+grafana:
+  title: Grafana
+  url: /service/grafana
+  icon: mdi:chart-tree
+  require_admin: false
+zigbee2mqtt:
+  title: zigbee2mqtt
+  url: /service/zigbee
+  icon: mdi:zigbee
+  require_admin: true
