@@ -18,3 +18,8 @@ zigbee2mqtt:
   url: /service/zigbee
   icon: mdi:zigbee
   require_admin: true
+appdaemon:
+  title: appdaemon
+  url: /service/appdaemon
+  icon: mdi:language-python
+  require_admin: true

@@ -2,22 +2,23 @@
 
 CONF=/conf
 CONF_SRC=/tmp/config
+CONF_TEMPLATE=/usr/src/app/conf
 
 cp $CONF_SRC/appdaemon.yaml $CONF/appdaemon.yaml
 
 # if apps folder doesn't exist, copy the default
 if [ ! -d $CONF/apps ]; then
-  cp -r $CONF_SRC/apps $CONF/apps
+  cp -r $CONF_TEMPLATE/apps $CONF/apps
 fi
 
 # if apps file doesn't exist, copy the default
 if [ ! -f $CONF/apps/apps.yaml ]; then
-  cp $CONF_SRC/apps/apps.yaml.example $CONF/apps/apps.yaml
+  cp $CONF_TEMPLATE/apps/apps.yaml.example $CONF/apps/apps.yaml
 fi
 
 # if dashboards folder doesn't exist, copy the default
 if [ ! -d $CONF/dashboards ]; then
-  cp -r $CONF_SRC/dashboards $CONF/dashboards
+  cp -r $CONF_TEMPLATE/dashboards $CONF/dashboards
 fi
 
 # if ENV HA_KEY is set, change the value in appdaemon.yaml
