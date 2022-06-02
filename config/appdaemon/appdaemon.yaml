@@ -3,16 +3,28 @@ appdaemon:
   latitude: 51.725
   longitude: 14.3434
   elevation: 0
+
   plugins:
     HASS:
       type: hass
+      namespace: default
+      cert_path: /certs/intermediate_ca_fullchain.pem
+      cert_verify: false
       ha_url: https://homeassistant:8123
+      token:
+
     MQTT:
       type: mqtt
       namespace: mqtt
+      verbose: True
       client_host: mosquitto
       client_port: 8883
       client_transport: tcp
       client_cert: /clientssl/fullchain.pem
+      client_key: /clientssl/privkey.pem
+      ca_cert: /certs/intermediate_ca_fullchain.pem
+      verify_cert: true
+      client_id: appdaemon
 
-  app_dir: /apps
+http:
+  url: http://127.0.0.1:5050

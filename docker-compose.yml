@@ -349,17 +349,26 @@ services:
     image: acockburn/appdaemon:latest
     restart: unless-stopped
     volumes:
-      - ./config/appdaemon:/config
+      - ./config/appdaemon:/tmp/config
+
       - ${DATA_DIRECTORY:-./data}/appdaemon:/data
-      - ./apps:/apps
-      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/appdaemon:/ssl:ro
+      - ./appdaemon/apps:/conf/apps
+      - ./appdaemon/dashboards:/conf/dashboards
+      - ./appdaemon/namespaces:/conf/namespaces
+      - ./appdaemon/www:/conf/www
+      
       - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/client/appdaemon:/clientssl:ro
-      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/hoemassistant/fullchain.pem:/certs/homeassistant.pem:ro
-      - ${DATA_DIRECTORY:-./data}/ssl/internal/certs/mosquitto/fullchain.pem:/certs/mosquitto.pem:ro
+      - ${DATA_DIRECTORY:-./data}/ssl/internal/ca_intermediate/intermediate_ca_fullchain.pem:/certs/intermediate_ca_fullchain.pem:ro
+
+      - ./one_time_config/appdaemon.init:/init:ro
     env_file:
       - env/appdaemon.env
     depends_on:
       - mosquitto
+      - homeassistant
+    networks: 
+      - hass
+    entrypoint: /bin/sh /init/init.sh
 
     
 
